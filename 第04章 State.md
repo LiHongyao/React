@@ -75,7 +75,7 @@ ReactDOM.render(
 4. 浏览器每秒钟更新一次当前时间。 在其中，`LocaleTime` 组件通过使用包含当前时间的对象调用 `setState()` 来调度UI更新。 通过调用 `setState()` ，React 知道状态已经改变，并再次调用 `render()` 方法来确定屏幕上应当显示什么。 这一次，`render()` 方法中的 `this.state.date` 将不同，所以渲染输出将包含更新的时间，并相应地更新DOM。
 5. 一旦`LocaleTime`组件被从DOM中移除，React会调用`componentWillUnmount()`这个钩子函数，定时器也就会被清除。
 
-# # 正确使用状态
+# # 注意
 
 ## 1、不要直接更新状态
 
@@ -169,7 +169,7 @@ componentDidMount() {
 
 这也适用于用户定义的组件：
 
-```
+```react
 <FormattedDate date={this.state.date} />
 ```
 
