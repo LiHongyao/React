@@ -2,80 +2,77 @@ https://doc.react-china.org/docs/state-and-lifecycle.html
 
 # # 概述
 
-我们知道，通过 props 可以实现数据的传递，但是有一个问题，那就是如果我们需要动态更新数据，就不能通过 props 了，因为 react 中的 props 显示再页面上后，并不能动态响应，此时，我们就需要通过状态（State）来实现了，状态与属性十分相似，但是状态是私有的，完全受控于当前组件。我们来看一组关于定时器更新当前时间的示例。
+我们知道，通过 props 可以实现数据的传递，但是有一个问题，那就是如果我们需要动态更新数据，就不能通过 props 了，因为 react 中的 props 显示在页面上后，并不能动态响应，此时，我们就需要通过状态（State）来实现了，状态与属性十分相似，但是状态是私有的，完全受控于当前组件。我们来看一组关于定时器更新当前时间的示例。
 
 # # 示例
 
-```html
-<!DOCTYPE html>
-<html lang="zh-Hans">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <script src="../build/react.development.js"></script>
-    <script src="../build/react-dom.development.js"></script>
-    <script src="../build/babel.min.js"></script>
-    <title>React State</title>
-</head>
-<body>
-    
-    <div id="app"></div>
+**\> 定义 LocaleTime 组件**
 
-    <script type="text/babel">
-        // 1. 创建一个显示时间的组件
-        class LocaleTime extends React.Component {
-            // 构造器
-            constructor(props) {
-                // 在ES6中，子类的constructor中必须先调用super才能引用this
-                super(props);
-                // 初始化date状态
-                this.state = {
-                    date: new Date()
-                };
-            }
-            // 生命周期：组件挂载完成
-            componentDidMount() {
-                // 初始化定时器，并将该定时器绑定在组件实例上
-                this.timer = setInterval(
-                    () => this.updateDate(),
-                    1000
-                )
-            }
-            // 生命周期：组件即将卸载
-            componentWillUnmount() {
-                // 清除定时器
-                clearInterval(this.timer);
-            }
-            // 定义函数，更新date状态值
-            updateDate() {
-                this.setState({
-                    date: new Date()
-                })
-            }
-            render() {
-                return (
-                    <h1>北京时间：{this.state.date.toLocaleTimeString()}</h1>
-                )
-            }
+```react
+
+import React, {Component} from 'react';
+
+// 导出一个显示时间的组件
+export default class LocaleTime extends Component {
+    // 1. 构造器
+    constructor(props) {
+        // 在ES6中，子类的constructor中必须先调用super才能引用this
+        super(props);
+        // 初始化state
+        this.state = {
+            date: new Date()
         }
-        // 2. 渲染组件
-        ReactDOM.render(
-            <LocaleTime />,
-            document.getElementById('app')
-        )
-        
-    </script>
-</body>
-</html>
+    }
+    // 2. 渲染函数
+    render() {
+        return (
+            <h1>北京时间：{this.state.date.toLocaleTimeString()}</h1>
+        );
+    }
+
+    // 3. 生命周期 -> 组件挂载完成
+    componentDidMount() {
+        // 初始化定时器，并将该定时器绑定在组件实例上
+        this.timer = setInterval(() => {
+            // 更新state值
+            this.setState({
+                date: new Date()
+            });
+        }, 1000)
+    }
+    // 4. 生命周期 -> 组件即将卸载
+    componentWillUnmount() {
+        // 清除定时器
+        clearInterval(this.timer);
+    }
+}
 ```
+
+**\> 使用 LocaleTime 组件**
+
+```react
+import React from 'react';
+import ReactDOM from 'react-dom';
+import LocaleTime from './locale-time';
+
+ReactDOM.render(
+    <LocaleTime />,
+    document.getElementById('root')
+);
+```
+
+**\> 效果演示**
+
+![](IMGS/state.gif)
+
+**\> 分析**
 
 现在时钟每秒钟都会执行。让我们快速回顾一下发生了什么以及调用方法的顺序：
 
 1. 当 `<LocaleTime />` 被传递给 `ReactDOM.render()` 时，React 调用 `LocaleTime` 组件的构造函数。 由于 `LocaleTime` 需要显示当前时间，所以使用包含当前时间的对象来初始化 `this.state` 。 我们稍后会更新此状态。
 2. React 然后调用 `LocaleTime` 组件的 `render()` 方法。这是 React 了解屏幕上应该显示什么内容，然后 React 更新 DOM 以匹配 `LocaleTime` 的渲染输出。
-3. 当 `LocaleTime` 的输出插入到 DOM 中时，React 调用 `componentDidMount()` 生命周期钩子。 在其中，`LocaleTime` 组件要求浏览器设置一个定时器，每秒钟调用一次 `updateDate()`。
-4. 浏览器每秒钟调用 `updateDate()` 方法。 在其中，`LocaleTime` 组件通过使用包含当前时间的对象调用 `setState()` 来调度UI更新。 通过调用 `setState()` ，React 知道状态已经改变，并再次调用 `render()` 方法来确定屏幕上应当显示什么。 这一次，`render()` 方法中的 `this.state.date` 将不同，所以渲染输出将包含更新的时间，并相应地更新DOM。
+3. 当 `LocaleTime` 的输出插入到 DOM 中时，React 调用 `componentDidMount()` 生命周期钩子。 在其中，`LocaleTime` 组件要求浏览器设置一个定时器，每秒钟调用一次更新一次当前时间。
+4. 浏览器每秒钟更新一次当前时间。 在其中，`LocaleTime` 组件通过使用包含当前时间的对象调用 `setState()` 来调度UI更新。 通过调用 `setState()` ，React 知道状态已经改变，并再次调用 `render()` 方法来确定屏幕上应当显示什么。 这一次，`render()` 方法中的 `this.state.date` 将不同，所以渲染输出将包含更新的时间，并相应地更新DOM。
 5. 一旦`LocaleTime`组件被从DOM中移除，React会调用`componentWillUnmount()`这个钩子函数，定时器也就会被清除。
 
 # # 正确使用状态

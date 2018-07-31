@@ -47,9 +47,10 @@ React 拥有较高的性能，代码逻辑非常简单，越来越多的人已�
 </head>
 <body>
     <div id="app"></div>
-    <!-- 注意script标签要加type="text/babel"，不然无法识别jsx语法 -->
+    <!-- 在React开发中，使用JSX，跟JavaScript不兼容，在使用JSX的地方，要设置type：text/babel -->
+    <!-- babel 是一个转换编译器，ES6转成可以再浏览器中运行的代码-->
     <script type="text/babel">
-        //我们的react
+        // 我们的react
     </script>
 </body>
 </html>
@@ -61,13 +62,13 @@ React 拥有较高的性能，代码逻辑非常简单，越来越多的人已�
 $ npm i -S react
 ```
 
-## 4. 使用 create-react-app 快速构建 React 开发环境
+## 4. react 脚手架
 
 create-react-app 是来自于 Facebook，通过该命令我们无需配置就能快速构建 React 开发环境。
 
 create-react-app 自动创建的项目是基于 Webpack + ES6 。
 
-执行以下命令创建项目：
+stips 01：执行以下命令创建项目：
 
 ```shell
 # 全局安装create-react-app，如果不想全局安装，则不要-g。可能会很慢，可以使用cnpm来安装
@@ -78,6 +79,32 @@ $ cd my-app/
 # 启动项目
 $ npm start
 ```
+
+stips 02：删除 src 目录下的所有文件
+
+stips 03：在 src 目录下创建 index.css文件
+
+```css
+.title {
+  color: blue;
+}
+```
+
+stips 04：在 src 目录下创建 index.js文件
+
+```js
+import React from 'react'
+import ReactDOM from 'react-dom'
+import './index.css'
+
+// ReactDOM.render() 用于将模板转换成HTML语言，渲染DOM，并插入到指定的DOM节点中
+ReactDOM.render(
+    <h1 className='title'>Hello, world!</h1>,
+    document.getElementById('root')
+)
+```
+
+stips 04：打开终端，执行指令：`yarn start`
 
 ## 5. CodePen
 
