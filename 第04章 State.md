@@ -175,7 +175,7 @@ componentDidMount() {
 
 `FormattedDate` 组件将在其属性中接收到 `date` 值，并且不知道它是来自 `LocaleTime` 状态、还是来自 `LocaleTime` 的属性、亦或手工输入：
 
-```html
+```react
 function FormattedDate(props) {
     return <h2>It is {props.date.toLocaleTimeString()}.</h2>;
 }

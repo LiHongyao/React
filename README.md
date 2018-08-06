@@ -19,6 +19,67 @@ React 拥有较高的性能，代码逻辑非常简单，越来越多的人已�
 - **组件** − 通过 React 构建组件，使得代码更加容易得到复用，能够很好的应用在大项目的开发中。
 - **单向响应的数据流** − React 实现了单向响应的数据流，从而减少了重复代码，这也是它为什么比传统数据绑定更简单。
 
+# # 优势
+
+![](IMGS/goodness.png)
+
+**首先**：虚拟 DOM，在 DOM 树的状态需要发生变化时，虚拟 DOM 机制会将同一Event loop前后的 DOM树进行对比，如果两个 DOM 树存在不一样的地方，那么 React 仅仅会针对这些不一样的区域来进行响应的 DOM 修改，从而实现最高效的 DOM 操作和渲染。
+
+比如，我们修改了 DOM 树上一些节点或 UI 组件对应绑定的 state，React 会即刻将其标记为“脏状态”，在一个 Event loop 结束时，React 会计算得出 DOM 树上需要修改的地方及其最终的状态，并仅仅针对这些地方进行一次性的重新渲染。
+
+于是好处显而易见，并非每修改一次组件的 state，就会重新渲染一次，而是在 Event loop 结束后做一次计算，减少冗余的 DOM 操作。另外 React 只针对需要修改的地方来做新的渲染，而非重新渲染整个 DOM 树，自然效率很高。
+
+**其次**：组件可嵌套，而且，可以模版化 —— 其实在 React 里提及的“组件”，常规是一些可封装起来、复用的 UI 模块，可以理解为“带有细粒度UI功能的部分DOM区域”。然后我们可以把这些组件层层嵌套起来使用，当然这样组件间会存在依赖关系。
+
+至于模块化，类似于 ejs 那样可以作为独立的模块被引用到页面上来复用，它可以直接把 UI 组件当作脚本模块那样来使用，完全可以配合 CommonJS、AMD、CMD 等规范来 require 需要的组件模块，并处理好它们的依赖关系。
+
+基于上述的两点，React 很自然的就获得一部分开发者的青睐。不过在这之前得先理清两件事情：
+
+\1. React 是一个纯 View 层，不擅长于和动态数据打交道，因此它不同于，也替代不了常规的框架；
+
+\2. React 很擅长于处理组件化的页面，在页面上搭组件的形式有点像搭积木一样，因此用上React的项目需求常规为界面组件化。
+
+简单点说，React组件应该具有如下特征：
+
+（1）**可组合**（Composeable）：一个组件易于和其它组件一起使用，或者嵌套在另一个组件内部。如果一个组件内部创建了另一个组件，那么说父组件拥有它创建的子组件，通过这个特性，一个复杂的UI可以拆分成多个简单的 UI 组件；
+
+（2）**可重用**（Reusable）：每个组件都是具有独立功能的，它可以被使用在多个UI场景；
+
+（3）**可维护**（Maintainable）：每个小的组件仅仅包含自身的逻辑，更容易被理解和维护；
+
+组件化一直是网页开发的利器，许多开发者最希望能够最大程度的重复使用过去的开发的组件，避免重复造轮子。在 React 中组件就是一切，前端开发可能需要花点时间转变思维，尤其过去我们往往习惯将 HTML 、CSS 和 JavaScript 分离，现在却要把它们都封装在一起。
+
+以下是一般  React Component 书写的主要两种方式：
+
+1. 使用 ES6 的 Class
+
+```react
+//  注意组件首字母需要大写
+class MyComponent extends React.Component {
+	// render 是 Class based 元件唯一必須的方法（method）
+	render() {
+		return (
+			<div>Hello, World!</div>
+		);
+	}
+}
+
+// 將 <MyComponent /> 组件插入 id 為 app 的 DOM 元素中
+ReactDOM.render(<MyComponent/>, document.getElementById('app'));
+```
+
+1. 使用 Functional Component 写法
+
+```react
+// 使用 arrow function 来设计 Functional Component 让 UI 设计更便捷，避免互相干扰（side effect）
+const MyComponent = () => (
+	<div>Hello, World!</div>
+);
+
+// 將 <MyComponent /> 组件插入 id 為 app 的 DOM 元素中
+ReactDOM.render(<MyComponent/>, document.getElementById('app'));
+```
+
 # # 引入
 
 引入三个库： react.min.js 、react-dom.min.js 和 babel.min.js：

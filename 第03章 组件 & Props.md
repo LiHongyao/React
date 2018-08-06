@@ -12,7 +12,8 @@
 
 ## 1. 函数定义组件
 
-```js
+```react
+// 传统函数定义
 function SayHello(props) {
     return (
         <div className='container'>
@@ -20,11 +21,20 @@ function SayHello(props) {
         </div>
     );
 };
+
+// ES6语法定义
+const SayHello = (props) => {
+    return (
+        <div className='container'>
+            <h1>Hello, {props.name}</h1>
+        </div>
+    );    
+}
 ```
 
 ## 2. 类定义组件
 
-```js
+```react
 class SayHello extends React.Component {
     render() {
         return (
@@ -51,7 +61,7 @@ ReactDOM.render(
 
 1. 我们对 \<SayHello name="Henry" />元素调用了ReactDOM.render()方法。
 2. React将 {name: 'Henry'} 作为props传入并调用SayHello组件。
-3. Welcome组件将\<h1>Hello, Henry\</h1>元素作为结果返回。
+3. SayHello组件将\<h1>Hello, Henry\</h1>元素作为结果返回。
 4. React DOM将DOM更新为\<h1>Hello, Henry\</h1>。
 
 # # 组件样式
@@ -60,26 +70,37 @@ ReactDOM.render(
 
 我们来看有示例：
 
+```css
+/*user-info.css*/
+@charset 'utf-8';
+.gender {
+    color: orange;
+}
+```
+
 ```react
-let styleObj = {
-    color: 'red',
-    textDecoration: 'underline'
-};
-class TestBox extends React.Component {
+/*user-info.js*/
+import React, {Component} from 'react'
+import '../styles/user-info.css'
+
+class UserInfo extends Component {
     render() {
+        let styleObj = {
+            color: 'blue'
+        }
         return (
-            <div style={{background:'yellow', border: '1px solid #ccc'}}>
-                <h3 style={styleObj}>{this.props.title}</h3>
-                <p className='pStyle'>{this.props.des}</p>
+            <div className='user-info'>
+                {/* 内联样式 */}
+                <p style={{color:'red'}}>姓名：{this.props.name}</p>
+                {/* 对象样式 */}
+                <p style={styleObj}>年龄：{this.props.age}</p>
+                {/* 选择器样式 */}
+                <p className='gender'>性别：{this.props.gender}</p>
             </div>
         )
     }
 }
-
-ReactDOM.render(
-    <TestBox title='成都' des='历史文化名城，一座你来了就不想走的城市。' />,
-    document.getElementById('root')
-);
+export default UserInfo;
 ```
 
 > 注意：
@@ -239,6 +260,8 @@ ReactDOM.render(
 
 ```shell
 $ npm i -S prop-types
+OR
+$ yarn add prop-types
 ```
 
  **\> 引入：**
