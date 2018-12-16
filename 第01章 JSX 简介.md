@@ -4,14 +4,14 @@ JSX 不是一门编程语言，是一种 JavaScript 的语法扩展（语法糖�
 
 - JSX 必须借助 React 运行环境。
 - JSX 标签就是 HTML 标签，只不过在js中书写这些标签的时候无需使用双引号括起来。
-- JSX 语法能够让我们更直观的看到组件的DOM结构，不能再浏览器上直接运行，最终会转换成js代码在浏览器中运行。
+- JSX 语法能够让我们更直观的看到组件的DOM结构，不能在浏览器上直接运行，最终会转换成js代码在浏览器中运行。
 
 # # JSX 表达式
 
 你可以任意地在 JSX 当中使用 JavaScript 表达式，在 JSX 当中的表达式要包含在大括号`{}`里：
 
 ```react
-let name = 'henry', isLogin = true;
+let name = 'Henry', isLogin = true;
 ReactDOM.render(
     <div>
         {name} - { isLogin ? "已登录" : "未登录"}

@@ -23,8 +23,7 @@ function SayHello(props) {
 };
 
 // ES6语法定义
-const SayHello = (props) => {
-    return (
+const SayHello = (props) => (
         <div className='container'>
             <h1>Hello, {props.name}</h1>
         </div>
@@ -251,6 +250,8 @@ ReactDOM.render(
 渲染结果：
 
 ![](IMGS/props-children.png)
+
+> 提示：类似于Vue.js中的插槽。
 
 ## 3. [prop-types](https://www.npmjs.com/package/prop-types)
 

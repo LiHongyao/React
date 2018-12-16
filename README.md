@@ -134,6 +134,8 @@ stips 01：执行以下命令创建项目：
 ```shell
 # 全局安装create-react-app，如果不想全局安装，则不要-g。可能会很慢，可以使用cnpm来安装
 $ npm i -g create-react-app
+# 查看版本，如果打印版本号，表示安装成功
+$ create-react-app --version
 # 创建项目，my-app是项目名
 $ create-react-app my-app
 $ cd my-app/
