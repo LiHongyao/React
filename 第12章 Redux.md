@@ -481,9 +481,9 @@ let nextState = todoApp(previousState, action)
 
 ## \> 搭配 React
 
-这里需要再强调一下：Redux 和 React 之间没有关系。Redux 支持 React、Angular、jQuery 甚至纯 JavaScript。尽管如此，Redux 还是和 [React](http://facebook.github.io/react/) 这类库搭配起来用最好，因为这类库允许你以 state 函数的形式来描述界面，Redux 通过 action 的形式来发起 state 变化。
+为了方便使用，Redux 的作者封装了一个 React 专用的库 [React-Redux](https://github.com/reactjs/react-redux)，本文主要介绍它。
 
-下面使用 React 来开发一个 todo 任务管理应用。
+这个库是可以选用的。实际项目中，你应该权衡一下，是直接使用 Redux，还是使用 React-Redux。后者虽然提供了便利，但是需要掌握额外的 API，并且要遵守它的组件拆分规范。
 
 ### 1. 安装 react-redux
 
@@ -493,12 +493,41 @@ $ npm i -S react-redux
 
 ### 2. 容器组件和展示组件
 
+React-Redux 将所有组件分成两大类
+
 - 容器组件：Smart/Container Components
 - 展示组件：Dumb/Presentational Components
 
-Redux 的 React 绑定库是基于 [容器组件和展示组件相分离](https://www.jianshu.com/p/6fa2b21f5df3) 的开发思想。所以建议先读完这篇文章再回来继续学习。这个思想非常重要。
+**\> 展示组件**
 
-已经读完了？那让我们再总结一下不同点：
+展示组件有以下几个特征：
+
+- 只负责 UI 的呈现，不带有任何业务逻辑
+- 没有状态（ 即不使用 *this.state*  这个变量 ）
+- 所有数据都由参数（ *this.props*）提供
+- 不使用任何 Redux 的 API
+
+下面是一个展示组件的示例：
+
+```react
+const Button = text => (<button type="button">{text}</button>)
+```
+
+因为不含有状态，展示组件又称为"纯组件"，即它纯函数一样，纯粹由参数决定它的值。
+
+**\> 容器组件**
+
+容器组件的特征恰恰相反。
+
+- 负责管理数据和业务逻辑，不负责 UI 的呈现
+- 带有内部状态
+- 使用 Redux 的 API
+
+总之，只要记住一句话就可以了：展示组件负责 UI 的呈现，容器组件负责管理数据和逻辑。
+
+你可能会问，如果一个组件既有 UI 又有业务逻辑，那怎么办？回答是，将它拆分成下面的结构：外面是一个容器组件，里面包了一个展示组件。前者负责与外部的通信，将数据传给后者，由后者渲染出视图。
+
+React-Redux 规定，所有的展示组件都由用户提供，容器组件则是由 React-Redux 自动生成。也就是说，用户负责视觉层，状态管理则是全部交给它。
 
 |                | 展示组件           | 容器组件               |
 | -------------- | -------------- | ------------------ |
@@ -508,143 +537,322 @@ Redux 的 React 绑定库是基于 [容器组件和展示组件相分离](https:
 | **数据修改**       | 从 props 调用回调函数 | 向 Redux 派发 actions |
 | **调用方式**       | 手动             | 通常由 React Redux 生成 |
 
-大部分的组件都应该是展示型的，但一般需要少数的几个容器组件把它们和 Redux store 连接起来。这和下面的设计简介并不意味着容器组件必须位于组件树的最顶层。如果一个容器组件变得太复杂（例如，它有大量的嵌套组件以及传递数不尽的回调函数），那么在组件树中引入另一个容器，就像[FAQ](http://cn.redux.js.org/docs/faq/ReactRedux.html#react-multiple-components)中提到的那样。
+### 3. connect()
 
-技术上讲你可以直接使用 `store.subscribe()` 来编写容器组件。但不建议这么做的原因是无法使用 React Redux 带来的性能优化。也因此，不要手写容器组件，而使用 React Redux 的 `connect()` 方法来生成，后面会详细介绍。
-
-### 3. 设计组件层次结构
-
-还记得当初如何 [设计 state 根对象的结构](http://cn.redux.js.org/docs/basics/Reducers.html) 吗？现在就要定义与它匹配的界面的层次结构。其实这不是 Redux 相关的工作，[React 开发思想](https://facebook.github.io/react/docs/thinking-in-react.html)在这方面解释的非常棒。
-
-我们的概要设计很简单。我们想要显示一个 todo 项的列表。一个 todo 项被点击后，会增加一条删除线并标记 completed。我们会显示用户新增一个 todo 字段。在 footer 里显示一个可切换的显示全部/只显示 completed 的/只显示 incompleted 的 todos。
-
-#### \> 展示组件
-
-以下的这些组件（和它们的 props ）就是从这个设计里来的：
-
-- TodoList ：用于显示 todos 列表。
-  - todos: Array 以 { text,  completed } 形式显示的 todo 项数组。
-  - onTodoClick(index: number)  当 todo 项被点击时调用的回调函数。
-- Todo：一个 todo 项。
-  - text: string 显示的文本内容。
-  - completed: boolean  todo 项是否显示删除线。
-  - onClick() 当 todo 项被点击时调用的回调函数。
-- Link：带有 callback 回调功能的链接
-  - onClick() 当点击链接时会触发
-- Footer： 一个允许用户改变可见 todo 过滤器的组件。
-- App： 根组件，渲染余下的所有内容。
-
-这些组件只定义外观并不关心数据来源和如何改变。传入什么就渲染什么。如果你把代码从 Redux 迁移到别的架构，这些组件可以不做任何改动直接使用。它们并不依赖于 Redux。
-
-### 4. 源码 
-
-#### 4.1. 入口文件
-
-src/index.js
-
-```jsx
-import React      from "react";
-import ReactDOM   from "react-dom";
-import App        from "./App";
-import store      from "./store";
-import {Provider} from "react-redux";
-
-ReactDOM.render(
-    <Provider store={store}>
-        <App />
-    </Provider>,
-    document.getElementById('root')
-);
-```
-
-#### 4.2. 创建action
-
-src/store/actions/index.js
+React-Redux 提供`connect`方法，用于从展示组件生成容器组件。`connect`的意思，就是将这两种组件连起来。
 
 ```js
-// 添加待办事项
-let nextTodoId = 0;
-export const addTodo = (text) => ({
-    type: "ADD_TODO", 
-    id: nextTodoId++,
-    text
-});
+import { connect } from 'react-redux'
+const VisibleTodoList = connect()(TodoList);
+```
 
-// 切换显示（待办/以办）
-export const toggleTodo = (id) => ({ 
-    type: "TOGGLE_TODO",
-    id
- });
+上面代码中，`TodoList`是展示组件，`VisibleTodoList`就是由 React-Redux 通过`connect`方法自动生成的容器组件。
 
+但是，因为没有定义业务逻辑，上面这个容器组件毫无意义，只是 UI 组件的一个单纯的包装层。为了定义业务逻辑，需要给出下面两方面的信息。
 
-// 设置显示
-export const setVisibilityFilter = (filter)  => ({ 
-    type: "SET_VISIBILITY_FILTER", 
-    filter 
-});
+1）输入逻辑：外部的数据（即 `state` 对象）如何转换为 展示 组件的参数
 
-// 筛选条件
-export const VisibilityFilters = {
-    // 显示所有
-    SHOW_ALL: 'SHOW_ALL',
-    // 显示已完成事项
-    SHOW_COMPLETED: 'SHOW_COMPLETED',
-    // 显示未完成事项
-    SHOW_ACTIVE: 'SHOW_ACTIVE'
+2）输出逻辑：用户发出的动作如何变为 Action 对象，从 展示 组件传出去。
+
+因此，`connect`方法的完整 API 如下。
+
+```js
+import { connect } from 'react-redux'
+
+const VisibleTodoList = connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(TodoList)
+```
+
+上面代码中，`connect` 方法接受两个参数：`mapStateToProps` 和 `mapDispatchToProps`。它们定义了 展示 组件的业务逻辑。前者负责输入逻辑，即将`state`映射到 展示 组件的参数（`props`），后者负责输出逻辑，即将用户对 展示 组件的操作映射成 Action。
+
+### 4. mapStateToProps()
+
+`mapStateToProps` 是一个函数。它的作用就是像它的名字那样，建立一个从（外部的）`state`对象到（展示 组件的）`props`对象的映射关系。
+
+作为函数，`mapStateToProps` 执行后应该返回一个对象，里面的每一个键值对就是一个映射。请看下面的例子。
+
+```js
+const mapStateToProps = (state) => {
+  return {
+    todos: getVisibleTodos(state.todos, state.visibilityFilter)
+  }
 }
 ```
 
-#### 4.3. 创建reducer
+上面代码中，`mapStateToProps` 是一个函数，它接受 `state` 作为参数，返回一个对象。这个对象有一个 `todos` 属性，代表 展示 组件的同名参数，后面的`getVisibleTodos`也是一个函数，可以从`state`算出 `todos` 的值。
 
-src/store/reducers/todos.js
+下面就是`getVisibleTodos`的一个例子，用来算出`todos`。
 
 ```js
-export const todos = (state = [], action) => {
-    switch (action.type) {
-        case "ADD_TODO": 
-            return [
-                ...state,
-                {
-                    text: action.text,
-                    id: action.id,
-                    computed: false
-                }
-            ]
-        case "TOGGLE_TODO":
-            return state.map((todo) => 
-                   todo.id == action.id ? {...todo, computed: !todo.computed}:todo 
-            )
-        default: 
-            return state
-    }
-};
+const getVisibleTodos = (todos, filter) => {
+  switch (filter) {
+    case 'SHOW_ALL':
+      return todos
+    case 'SHOW_COMPLETED':
+      return todos.filter(t => t.completed)
+    case 'SHOW_ACTIVE':
+      return todos.filter(t => !t.completed)
+    default:
+      throw new Error('Unknown filter: ' + filter)
+  }
+}
 ```
 
-src/store/reducers/visibilityFilter.js
+`mapStateToProps`会订阅 Store，每当`state`更新的时候，就会自动执行，重新计算 UI 组件的参数，从而触发 UI 组件的重新渲染。
+
+`mapStateToProps`的第一个参数总是`state`对象，还可以使用第二个参数，代表容器组件的`props`对象。
 
 ```js
-export const visibilityFilter = (state = "SHOW_ALL", action) => {
+// 容器组件的代码
+//    <FilterLink filter="SHOW_ALL">
+//      All
+//    </FilterLink>
+
+const mapStateToProps = (state, ownProps) => {
+  return {
+    active: ownProps.filter === state.visibilityFilter
+  }
+}
+```
+
+使用`ownProps`作为参数后，如果容器组件的参数发生变化，也会引发 UI 组件重新渲染。
+
+`connect`方法可以省略`mapStateToProps`参数，那样的话，UI 组件就不会订阅Store，就是说 Store 的更新不会引起 UI 组件的更新。
+
+### 5. mapDispatchToProps()
+
+`mapDispatchToProps`是`connect`函数的第二个参数，用来建立 展示 组件的参数到`store.dispatch`方法的映射。也就是说，它定义了哪些用户的操作应该当作 Action，传给 Store。它可以是一个函数，也可以是一个对象。
+
+如果`mapDispatchToProps`是一个函数，会得到`dispatch`和`ownProps`（容器组件的`props`对象）两个参数。
+
+```js
+const mapDispatchToProps = (dispatch, ownProps ) => {
+  return {
+    onClick: () => {
+      dispatch({
+        type: 'SET_VISIBILITY_FILTER',
+        filter: ownProps.filter
+      });
+    }
+  };
+}
+```
+
+从上面代码可以看到，`mapDispatchToProps`作为函数，应该返回一个对象，该对象的每个键值对都是一个映射，定义了 展示 组件的参数怎样发出 Action。
+
+如果`mapDispatchToProps`是一个对象，它的每个键名也是对应 展示组件的同名参数，键值应该是一个函数，会被当作 Action creator ，返回的 Action 会由 Redux 自动发出。举例来说，上面的`mapDispatchToProps`写成对象就是下面这样。
+
+```js
+const mapDispatchToProps = {
+  onClick: (filter) => {
+    type: 'SET_VISIBILITY_FILTER',
+    filter: filter
+  };
+}
+```
+
+### 6. \< Provider > 组件
+
+`connect` 方法生成容器组件以后，需要让容器组件拿到 `state` 对象，才能生成 展示 组件的参数。
+
+一种解决方法是将`state`对象作为参数，传入容器组件。但是，这样做比较麻烦，尤其是容器组件可能在很深的层级，一级级将`state`传下去就很麻烦。
+
+React-Redux 提供`Provider`组件，可以让容器组件拿到`state`。
+
+```react
+import { Provider } from 'react-redux'
+import { createStore } from 'redux'
+import todoApp from './reducers'
+import App from './components/App'
+
+let store = createStore(todoApp);
+
+render(
+  <Provider store={store}>
+    <App />
+  </Provider>,
+  document.getElementById('root')
+)
+```
+
+上面代码中，`Provider`在根组件外面包了一层，这样一来，`App`的所有子组件就默认都可以拿到`state`了。
+
+它的原理是`React`组件的[`context`](https://facebook.github.io/react/docs/context.html)属性，请看源码。
+
+```react
+class Provider extends Component {
+  getChildContext() {
+    return {
+      store: this.props.store
+    };
+  }
+  render() {
+    return this.props.children;
+  }
+}
+
+Provider.childContextTypes = {
+  store: React.PropTypes.object
+}
+```
+
+上面代码中，`store`放在了上下文对象`context`上面。然后，子组件就可以从`context`拿到`store`，代码大致如下。
+
+```react
+class VisibleTodoList extends Component {
+  componentDidMount() {
+    const { store } = this.context;
+    this.unsubscribe = store.subscribe(() =>
+      this.forceUpdate()
+    );
+  }
+
+  render() {
+    const props = this.props;
+    const { store } = this.context;
+    const state = store.getState();
+    // ...
+  }
+}
+
+VisibleTodoList.contextTypes = {
+  store: React.PropTypes.object
+}
+```
+
+`React-Redux`自动生成的容器组件的代码，就类似上面这样，从而拿到`store`。
+
+### 7. 实例：计数器
+
+我们来看一个实例。下面是一个计数器组件，它是一个纯的展示组件。
+
+```react
+// ./src/components/counter.js
+import React, {Component} from "react";
+
+class Counter extends Component {
+    render() {
+        // 获取props
+        const {value, onIncreaseClick} = this.props;
+        return (
+            <div style={{textAlign:"center"}}>
+                <span>{value}</span>
+                <button 
+                    style={{display:"block", margin:"0 auto"}}
+                    type="button"
+                    onClick={onIncreaseClick}>
+                    Increase
+                </button>
+            </div>
+        )
+    }
+}
+
+export default Counter;
+```
+
+上面代码中，这个 展示 组件有两个参数：`value` 和 `onIncreaseClick`。前者需要从`state`计算得到，后者需要向外发出 Action。
+
+接下来，我们定义一个action
+
+```js
+// ./src/store/actions/index.js
+export const increaseAction = {
+  type: "INCREASE"
+}
+```
+
+接着，定义`value`到`state`的映射，以及`onIncreaseClick`到`dispatch`的映射。也就是所谓的容器组件
+
+```react
+// ./src/containers/App.js
+import { connect } from "react-redux";
+import { increaseAction } from "../store/actions";
+import Counter from "../components/counter";
+
+const mapStateToProps = state  => ({
+    value: state.count
+});
+
+const mapDishpatchToProps = dispatch => ({
+    onIncreaseClick: () => dispatch(increaseAction)
+});
+
+// 使用connect方法生成容器组件
+export default connect(
+    mapStateToProps,
+    mapDishpatchToProps
+)(Counter);
+```
+
+然后，定义这个组件的reducer
+
+```js
+// ./src/store/reducer/index.js
+const todoApp = (state = {count: 0}, action) => {
+    const count = state.count;
     switch(action.type) {
-        case "SET_VISIBILITY_FILTER":
-            return action.filter
+        case "INCREASE": 
+            return {count: count + 1}
         default:
             return state
     }
 };
+
+export default todoApp;
 ```
 
-src/store/reducers/index.js
+生成 `store` 对象。
 
 ```js
-import {combineReducers} from "redux";
+import { createStore } from 'redux'
+import todoApp from './reducers'
 
-export default combineReducers({
-    visibilityFilter,
-    todos
-});;
+export const store = createStore(todoApp)
 ```
 
-#### 4.4 展示组件
+最后，使用`Provider`在根组件外面包一层
+
+```react
+import React from 'react'
+import ReactDOM from 'react-dom'
+import { Provider } from 'react-redux'
+import { store } from "./store"
+import App from './containers/App'
+
+
+ReactDOM.render(
+  <Provider store={store}>
+    <App />
+  </Provider>,
+  document.getElementById('root')
+)
+```
+
+# # react-router 路由库
+
+使用`React-Router`的项目，与其他项目没有不同之处，也是使用`Provider`在`Router`外面包一层，毕竟`Provider`的唯一功能就是传入`store`对象。
+
+```js
+
+const Root = ({ store }) => (
+  <Provider store={store}>
+    <Router>
+      <Route path="/" component={App} />
+    </Router>
+  </Provider>
+);
+```
+
+
+
+
+
+
+
+
 
 
 
