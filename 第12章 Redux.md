@@ -30,7 +30,7 @@ Redux 是 JavaScript 状态容器，提供可预测化的状态管理。可以�
 
 唯一改变 state 的方法就是触发 action，action 是一个用于描述已发生事件的普通对象。
 
-### 3. 使用纯函数来执行修改
+### 3. 使用纯函数(reducer)来执行修改
 
 为了描述 action 如何改变 state tree ，你需要编写 reducers。
 
@@ -113,7 +113,7 @@ export const addToDo = (text) => ({
 当调用 action 创建函数时，一般会把 action 创建函数的结果传给 `dispatch()` 方法即可发起一次 dispatch 过程。类似于Vuex中的commit提交一次Mutaions.
 
 ```js
-store.dishpatch(addToDo(text));
+store.dishpatch(addToDo(text));x
 ```
 
 ## \> Reducer
