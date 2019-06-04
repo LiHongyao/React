@@ -71,7 +71,7 @@ ReactDOM.render(<MyComponent/>, document.getElementById('app'));
 1. 使用 Functional Component 写法
 
 ```react
-// 使用 arrow function 来设计 Functional Component 让 UI 设计更便捷，避免互相干扰（side effect）
+// 使用箭头函数来设计 Functional Component 让 UI 设计更便捷，避免互相干扰（side effect）
 const MyComponent = () => (
 	<div>Hello, World!</div>
 );
@@ -88,9 +88,7 @@ ReactDOM.render(<MyComponent/>, document.getElementById('app'));
 - **react-dom.min.js** - 提供与 DOM 相关的功能
 - **babel.min.js** - Babel 可以将 ES6 代码转为 ES5 代码，这样我们就能在目前不支持 ES6 浏览器上执行 React 代码。Babel 内嵌了对 JSX 的支持。通过将 Babel 和 babel-sublime 包（package）一同使用可以让源码的语法渲染上升到一个全新的水平。
 
-## 1. 直接下载
-
-点击前往下载：https://github.com/facebook/react/releases
+## 1. 直接下载点击前往下载：https://github.com/facebook/react/releases
 
 ## 2. CDN 引入
 

@@ -117,6 +117,12 @@ this.setState({
 this.setState((prevState, props) => ({
   counter: prevState.counter + props.increment
 }));
+// 等价于
+this.setState(function(prevState, props) {
+  return {
+ 		 counter: prevState.counter + props.increment
+	}
+})
 ```
 
 ## 3、状态合并更新
@@ -207,3 +213,4 @@ ReactDOM.render(
 每个 `LocaleTime` 建立自己的定时器并且独立更新。
 
 在 React 应用程序中，组件是有状态还是无状态被认为是可能随时间而变化的组件的实现细节。 可以在有状态组件中使用无状态组件，反之亦然。
+

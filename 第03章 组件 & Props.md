@@ -108,7 +108,7 @@ export default UserInfo;
 > 2. HTML5 中 key、value都不加引号；React 中属于JavaScript 对象，key 的名字不能出现 `-`，需要使用驼峰命名法。如果value为字符串，需要使用引号。
 > 3. HTML5 中，value 如果是数字，需要带单位，React中不需要带单位。
 
-# # 组合组件（父子组件/组件嵌套）
+# # 组件嵌套
 
 功能：定义一个组件 `WebShow` ，输出网站的名字和网址，网址是一个可以点击的链接。
 

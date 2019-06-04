@@ -1,3 +1,5 @@
+<https://react.docschina.org/>
+
 # # 概述
 
 JSX 不是一门编程语言，是一种 JavaScript 的语法扩展（语法糖）。
@@ -13,12 +15,14 @@ JSX 不是一门编程语言，是一种 JavaScript 的语法扩展（语法糖�
 ```react
 let name = 'Henry', isLogin = true;
 ReactDOM.render(
-    <div>
+    <div class="box">
         {name} - { isLogin ? "已登录" : "未登录"}
     </div>,
     document.getElementById('root')
 );
 ```
+
+> 提示：react 组件内部只能有一个根标签
 
 # # JSX 属性
 
