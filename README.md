@@ -88,7 +88,9 @@ ReactDOM.render(<MyComponent/>, document.getElementById('app'));
 - **react-dom.min.js** - 提供与 DOM 相关的功能
 - **babel.min.js** - Babel 可以将 ES6 代码转为 ES5 代码，这样我们就能在目前不支持 ES6 浏览器上执行 React 代码。Babel 内嵌了对 JSX 的支持。通过将 Babel 和 babel-sublime 包（package）一同使用可以让源码的语法渲染上升到一个全新的水平。
 
-## 1. 直接下载点击前往下载：https://github.com/facebook/react/releases
+## 1. 直接下载
+
+点击前往下载：https://github.com/facebook/react/releases
 
 ## 2. CDN 引入
 
@@ -140,32 +142,6 @@ $ cd my-app/
 # 启动项目
 $ npm start
 ```
-
-stips 02：删除 src 目录下的所有文件
-
-stips 03：在 src 目录下创建 index.css文件
-
-```css
-.title {
-  color: blue;
-}
-```
-
-stips 04：在 src 目录下创建 index.js文件
-
-```js
-import React from 'react'
-import ReactDOM from 'react-dom'
-import './index.css'
-
-// ReactDOM.render() 用于将模板转换成HTML语言，渲染DOM，并插入到指定的DOM节点中
-ReactDOM.render(
-    <h1 className='title'>Hello, world!</h1>,
-    document.getElementById('root')
-)
-```
-
-stips 04：打开终端，执行指令：`yarn start`
 
 ## 5. CodePen
 
