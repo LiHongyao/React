@@ -1,4 +1,4 @@
-# # 概述
+# 一、概述
 
 组件可以将UI切分成一些的独立的、可复用的部件，这样你就只需专注于构建每一个单独的部件。
 
@@ -8,13 +8,13 @@
 - 每个组件内都必须实现自己的render方法。
 - 组件只能包含一个顶层标签。
 
-# # 定义组件
+# 二、定义组件
 
 ## 1. 函数定义组件
 
 ```react
 // 传统函数定义
-function SayHello(props) {
+function HelloText(props) {
     return (
         <div className='container'>
             <h1>Hello, {props.name}</h1>
@@ -22,8 +22,8 @@ function SayHello(props) {
     );
 };
 
-// ES6语法定义
-const SayHello = (props) => (
+// Button
+const HelloText = (props) => (
         <div className='container'>
             <h1>Hello, {props.name}</h1>
         </div>
@@ -34,36 +34,36 @@ const SayHello = (props) => (
 ## 2. 类定义组件
 
 ```react
-class SayHello extends React.Component {
+import React from "react";
+class HelloText extends React.Component {
     render() {
-        return (
-            <div className='container'>
-                <h1>Hello, {this.props.name}</h1>
-            </div>
-        )
+        return <h1>Hello, {this.props.name}</h1>;
     }
 }
+
+export default HelloText;
 ```
 
 上面两个组件在React中是相同的。
 
-# # 组件渲染
+# 三、组件渲染
 
 ```react
+import HelloText from "./components/HelloText";
 ReactDOM.render(
-    <SayHello name='Henry' />,
+    <HelloText name='Henry' />,
     document.getElementById('root')
 );
 ```
 
 我们来回顾一下在这个例子中发生了什么：
 
-1. 我们对 \<SayHello name="Henry" />元素调用了ReactDOM.render()方法。
-2. React将 {name: 'Henry'} 作为props传入并调用SayHello组件。
-3. SayHello组件将\<h1>Hello, Henry\</h1>元素作为结果返回。
+1. 我们对 \<HelloText name="Henry" />元素调用了ReactDOM.render()方法。
+2. React将 {name: 'Henry'} 作为props传入并调用HelloText组件。
+3. HelloText组件将\<h1>Hello, Henry\</h1>元素作为结果返回。
 4. React DOM将DOM更新为\<h1>Hello, Henry\</h1>。
 
-# # 组件样式
+# 四、组件样式
 
 组件样式：内联样式、对象样式、选择器样式
 
@@ -108,7 +108,7 @@ export default UserInfo;
 > 2. HTML5 中 key、value都不加引号；React 中属于JavaScript 对象，key 的名字不能出现 `-`，需要使用驼峰命名法。如果value为字符串，需要使用引号。
 > 3. HTML5 中，value 如果是数字，需要带单位，React中不需要带单位。
 
-# # 组件嵌套
+# 五、组件嵌套
 
 功能：定义一个组件 `WebShow` ，输出网站的名字和网址，网址是一个可以点击的链接。
 
@@ -164,25 +164,32 @@ ReactDOM.render (
 
 ![](IMGS/component-nested.png)
 
-# # Props
+# 六、Props
 
-props 是组件自身的属性，一般用于嵌套的内外层组件中，负责传递信息（通常是由父层组件向子层组件传递）。
+props 负责传递信息（通常是由父层组件向子层组件传递）。props 对象中的属性与组件的属性是一一对应的，不要直接去修改props中的属性值。
 
-> 注意：props 对象中的属性与组件的属性是一一对应的，不要直接去修改props中的属性值。
-
-```react
-class Sum extends React.Component {
+```js
+import React from "react";
+class HelloText extends React.Component {
     render() {
-        return (
-            <p>{parseInt(this.props.a) + parseInt(this.props.b)}</p>
-        );
+        return <h1>Hello, {this.props.name}</h1>;
     }
 }
 
-ReactDOM.render(
-    <Sum a="10" b="20"/>,
-    document.getElementById('root')
-);
+export default HelloText;
+```
+
+```typescript
+import React from 'react';
+import HelloText from "./components/HelloText"
+
+function App() {
+  return (<div className="app">
+    <HelloText name="木子李"></HelloText>
+  </div>)
+}
+
+export default App;
 ```
 
 ## 1.  …this.props
@@ -260,7 +267,7 @@ ReactDOM.render(
 **\> 安装：**
 
 ```shell
-$ npm i -S prop-types
+$ npm install prop-types
 OR
 $ yarn add prop-types
 ```
