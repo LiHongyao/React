@@ -1,51 +1,43 @@
 https://doc.react-china.org/docs/state-and-lifecycle.html
 
-# # 概述
+# 一、概述
 
 我们知道，通过 props 可以实现数据的传递，但是有一个问题，那就是如果我们需要动态更新数据，就不能通过 props 了，因为 react 中的 props 显示在页面上后，并不能动态响应，此时，我们就需要通过状态（State）来实现了，状态与属性十分相似，**但是状态是私有的，完全受控于当前组件**。我们来看一组关于定时器更新当前时间的示例。
 
-# # 示例
+# 二、示例
 
 **\> 定义 LocaleTime 组件**
 
 ```react
-
-import React, {Component} from 'react';
-
-// 导出一个显示时间的组件
-export default class LocaleTime extends Component {
-    // 1. 构造器
+import React from "react";
+class LocaleTime extends React.Component {
+    // => constructor
     constructor(props) {
-        // 在ES6中，子类的constructor中必须先调用super才能引用this
         super(props);
-        // 初始化state
+        // 初始化状态
         this.state = {
             date: new Date()
         }
     }
-    // 2. 渲染函数
-    render() {
-        return (
-            <h1>北京时间：{this.state.date.toLocaleTimeString()}</h1>
-        );
-    }
-
-    // 3. 生命周期 -> 组件挂载完成
+    // => life circle
     componentDidMount() {
-        // 初始化定时器，并将该定时器绑定在组件实例上
+        // 启动定时器，每秒更新一次date状态
         this.timer = setInterval(() => {
-            // 更新state值
+            // 更新state
             this.setState({
                 date: new Date()
-            });
-        }, 1000)
+            })
+        }, 1000);
     }
-    // 4. 生命周期 -> 组件即将卸载
     componentWillUnmount() {
-        // 清除定时器
         clearInterval(this.timer);
     }
+    // => render
+    render() {
+        return (<h1>北京时间：{this.state.date.toLocaleTimeString()}</h1>);
+    }
 }
+export default LocaleTime;
 ```
 
 **\> 使用 LocaleTime 组件**
@@ -75,7 +67,7 @@ ReactDOM.render(
 4. 浏览器每秒钟更新一次当前时间。 在其中，`LocaleTime` 组件通过使用包含当前时间的对象调用 `setState()` 来调度UI更新。 通过调用 `setState()` ，React 知道状态已经改变，并再次调用 `render()` 方法来确定屏幕上应当显示什么。 这一次，`render()` 方法中的 `this.state.date` 将不同，所以渲染输出将包含更新的时间，并相应地更新DOM。
 5. 一旦`LocaleTime`组件被从DOM中移除，React会调用`componentWillUnmount()`这个钩子函数，定时器也就会被清除。
 
-# # 注意
+# 三、注意
 
 ## 1、不要直接更新状态
 
@@ -159,9 +151,9 @@ componentDidMount() {
 }
 ```
 
-这里的合并是浅合并，也就是说`this.setState({comments})`完整保留了`this.state.posts`，但完全替换了`this.state.comments`。
+这里的合并是浅合并，也就是说 `this.setState({comments})` 完整保留了`this.state.posts`，但完全替换了`this.state.comments`。
 
-# # 数据自顶向下流动
+# 四、数据自顶向下流动
 
 父组件或子组件都不能知道某个组件是有状态还是无状态，并且它们不应该关心某组件是被定义为一个函数还是一个类。
 
@@ -170,7 +162,7 @@ componentDidMount() {
 组件可以选择将其状态作为属性传递给其子组件：
 
 ```html
-<h2>It is {this.state.date.toLocaleTimeString()}.</h2>
+<h1>It is {this.state.date.toLocaleTimeString()}.</h1>
 ```
 
 这也适用于用户定义的组件：

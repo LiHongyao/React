@@ -13,19 +13,19 @@
 ## 1. 函数定义组件
 
 ```react
-// 传统函数定义
-function HelloText(props) {
+// => 普通函数
+function App() {
     return (
-        <div className='container'>
-            <h1>Hello, {props.name}</h1>
+        <div className='App'>
+            <h1>Hello, App！</h1>
         </div>
     );
 };
 
-// Button
-const HelloText = (props) => (
-        <div className='container'>
-            <h1>Hello, {props.name}</h1>
+// => 箭头函数
+const App = () => (
+        <div className='App'>
+            <h1>Hello, App！</h1>
         </div>
     );    
 }
@@ -35,13 +35,17 @@ const HelloText = (props) => (
 
 ```react
 import React from "react";
-class HelloText extends React.Component {
-    render() {
-        return <h1>Hello, {this.props.name}</h1>;
-    }
-}
 
-export default HelloText;
+class App extends React.Component {
+  // 视图渲染
+  render() {
+    return (<div className="app">
+      <h1>Hello, App!</h1>
+    </div>)
+  }
+}
+// 导出组件
+export default App;
 ```
 
 上面两个组件在React中是相同的。
@@ -49,19 +53,12 @@ export default HelloText;
 # 三、组件渲染
 
 ```react
-import HelloText from "./components/HelloText";
+import App from './App';
 ReactDOM.render(
-    <HelloText name='Henry' />,
+    <App />,
     document.getElementById('root')
 );
 ```
-
-我们来回顾一下在这个例子中发生了什么：
-
-1. 我们对 \<HelloText name="Henry" />元素调用了ReactDOM.render()方法。
-2. React将 {name: 'Henry'} 作为props传入并调用HelloText组件。
-3. HelloText组件将\<h1>Hello, Henry\</h1>元素作为结果返回。
-4. React DOM将DOM更新为\<h1>Hello, Henry\</h1>。
 
 # 四、组件样式
 
@@ -70,103 +67,47 @@ ReactDOM.render(
 我们来看有示例：
 
 ```css
-/*user-info.css*/
+/*app.css*/
 @charset 'utf-8';
-.gender {
-    color: orange;
+.title {
+    color: green;
+    letter-spacing: 2px;;
 }
 ```
 
 ```react
-/*user-info.js*/
-import React, {Component} from 'react'
-import '../styles/user-info.css'
+/*app.js*/
+import React from "react";
+// 引入外联样式
+import "./App.css";
+class App extends React.Component {
+  render() {
+    let styleObj = { color: "blue", letterSpacing: "2px" };
 
-class UserInfo extends Component {
-    render() {
-        let styleObj = {
-            color: 'blue'
-        }
-        return (
-            <div className='user-info'>
-                {/* 内联样式 */}
-                <p style={{color:'red'}}>姓名：{this.props.name}</p>
-                {/* 对象样式 */}
-                <p style={styleObj}>年龄：{this.props.age}</p>
-                {/* 选择器样式 */}
-                <p className='gender'>性别：{this.props.gender}</p>
-            </div>
-        )
-    }
+    return (<div className="app">
+      {/* 内联样式 */}
+      <h1 style={{color:"red", letterSpacing:"2px"}}>Hello, World!</h1>
+      {/* 对象样式 */}
+      <h1 style={styleObj}>Hello, World!</h1>
+      {/* 外联样式 */}
+      <h1 className="title">Hello, World!</h1>
+    </div>)
+  }
 }
-export default UserInfo;
+export default App;
 ```
 
-> 注意：
->
-> 1. HTML5 以 `;` 结尾；React 以 `,` 结尾。
-> 2. HTML5 中 key、value都不加引号；React 中属于JavaScript 对象，key 的名字不能出现 `-`，需要使用驼峰命名法。如果value为字符串，需要使用引号。
-> 3. HTML5 中，value 如果是数字，需要带单位，React中不需要带单位。
+> 注意：内联样式绑定的是一个对象，所以样式与样式之间使用逗号`,`隔开。
 
 # 五、组件嵌套
 
-功能：定义一个组件 `WebShow` ，输出网站的名字和网址，网址是一个可以点击的链接。
+\# react 允许组件嵌套
 
-分析：定义一个组件 `WebName` 负责输出网站名字，定义一个组件 `WebLink` 负责输出网站链接，并且可以点击。
+# 六、父传子：Props
 
-```react
-// webshow.js
-import React, {Component} from 'react';
-// 定义WebName组件显示网站名称
-class WebName extends Component {
-    render() {
-        return (
-            <span>李鸿耀博客：</span>
-        );
-    }
-}
-// 定义WebLink组件显示网站地址
-class WebLink extends Component {
-    render() {
-        return (
-            <a href="https://github.com/LiHongyao/">https://github.com/LiHongyao/</a>
-        );
-    }
-}
-// 定义WebShow组件
-class WebShow extends Component {
-    render() {
-        return (
-            <div className="webshow">
-                <WebName />
-                <WebLink />
-            </div>
-        );
-    }
-}
-// 输出WebShow组件
-export default WebShow;
-```
+## 1. 简单例子
 
-```react
-// index.js
-import ReactDOM from 'react-dom';
-import React    from 'react';
-import WebShow  from './WebShow'
-
-ReactDOM.render (
-    <WebShow />,
-    document.getElementById('root')
-)
-```
-
-渲染结果：
-
-![](IMGS/component-nested.png)
-
-# 六、Props
-
-props 负责传递信息（通常是由父层组件向子层组件传递）。props 对象中的属性与组件的属性是一一对应的，不要直接去修改props中的属性值。
+props 对象中的属性与组件的属性是一一对应的，不要直接去修改props中的属性值。
 
 ```js
 import React from "react";
@@ -189,86 +130,53 @@ function App() {
   </div>)
 }
 
-export default App;
+export default App;x
 ```
 
-## 1.  …this.props
+## 2. 插槽
 
-props 提供的一个语法糖，可以将父组件中的全部属性都复制给子组件。
-
-```react
-class Link extends React.Component {
-    render() {
-        return (
-            <a {...this.props}>{this.props.name}</a>
-        )
-    }
-};
-ReactDOM.render(
-    <Link href="https://baidu.com" name="百度百科" />,
-    document.getElementById('root')
-);
-```
-
-渲染结果：
-
-```html
-<a href="https://baidu.com">百度百科</a>
-```
-
-## 2. this.props.children
-
-children 是一个例外，不是跟组件的属性对应的。它表示组件的所有子节点。
+*this.props.children*：表示组件的所有子节点，类似于Vue中的插槽。
 
 示例需求：定义一个列表组件，列表项中显示的内容，以及列表项的数量都由外部决定。
 
 ```react
-class ListComponent extends React.Component {
+import React from "react";
+class List extends React.Component {
     render() {
-        return (
-            <ul>
-                {
-                    /*
-                    列表项数量以及内容不确定，在创建模板时才能确定
+        return (<ul className="list">
+            {
+                /* 列表项数量以及内容不确定，在创建模板时才能确定
                     利用this.props.children从父组件获取需要展示的列表项内容
                     获取到列表项内容后，需要遍历children，逐项进行设置
                     使用React.Children.map() 方法
-                    返回值：数组对象，这里数组中的元素是<li>
-                     */
-                    React.Children.map(this.props.children, (child) => {
-                        // child 是遍历得到的父组件中的子节点
-                        return <li>{child}</li>
-                    })
-                }
-            </ul>
-        )
+                    返回值：数组对象，这里数组中的元素是<li> */
+                React.Children.map(this.props.children, child => {
+                    return <li>{child}</li>
+                })
+            }
+        </ul>)
     }
 }
-ReactDOM.render(
-    <ListComponent>
-        <span>HTML</span>
-        <span>CSS</span>
-        <span>JavaScript</span>
-    </ListComponent>,
-    document.getElementById('root')
-);
+export default List;
 ```
 
-渲染结果：
+```html
+<List>
+  <p>姜子牙</p>
+  <p>哪吒</p>
+</List>
+```
 
-![](IMGS/props-children.png)
-
-> 提示：类似于Vue.js中的插槽。
-
-## 3. [prop-types](https://www.npmjs.com/package/prop-types)
+## 3. [属性验证](https://www.npmjs.com/package/prop-types)
 
 > 注意： React.PropTypes 自 React v15.5 起已弃用。请使用 prop-types 库代替。
 
 **\> 安装：**
 
 ```shell
+# NPM
 $ npm install prop-types
-OR
+# YARN
 $ yarn add prop-types
 ```
 
@@ -281,51 +189,86 @@ import propTypes from 'prop-types';
 **\> 使用：**
 
 ```react
-class ShowInfos extends React.Component {
+import React from "react";
+import propTypes from "prop-types";
+class Child extends React.Component {
     render() {
-        return (
-            <div>
-                <p>{this.props.name}</p>
-                <p>{this.props.age}</p>
-            </div>
-        );
+        return (<div className="child"></div>)
     }
 }
-ShowInfos.propTypes = {
-    name: PropTypes.string,
-    age: PropTypes.oneOfType([
-        PropTypes.string,
-        PropTypes.number
-    ])
-};
-
-ReactDOM.render(
-    <ShowInfos name='Henry' age='28' />,
-    document.getElementById('root')
-);
+// 属性验证
+Child.propTypes = {
+    msg: propTypes.string,
+    num: propTypes.oneOfType([
+        propTypes.string,
+        propTypes.number
+    ]),
+    type: propTypes.oneOf(["邮箱", "手机"])
+}
+export default Child;
 ```
 
-## 4. 设置组件属性的默认值
+## 4. 属性默认值
 
 你可以通过配置 `defaultProps` 为 props定义默认值：
 
 ```react
 // 类型检测
-TipBox.propTypes = {
+Child.propTypes = {
     msg: PropTypes.string
 }
 // 设置默认值
-TipBox.defaultProps = {
+Child.defaultProps = {
     msg: '通知：下午17：00，教学部在会议室1开会！'
 }
-
-ReactDOM.render(
-    <TipBox />,
-    document.getElementById('root')
-);
 ```
 
+# 七、子传父：method
 
+原理：父组件在调用子组件的时候，将方法作为子组件的属性传递，在子组件中调用这个方法并将传递的数据作为函数参数从而实现子传父。
+
+```react
+// 子组件
+import React from "react";
+class Child extends React.Component {
+    constructor(props) {
+        super(props);
+        this.handleBtnClick = this.handleBtnClick.bind(this);
+    }
+    
+    render() {
+        return (<div className="child">
+            <button onClick={this.handleBtnClick}>发送数据</button>
+        </div>)
+    }
+    // => events
+    handleBtnClick(event) {
+        this.props.change("Hello");
+    }
+}
+
+export default Child;
+```
+
+```react
+// 父组件
+import React from "react";
+import Child from "./components/child/child";
+
+class App extends React.Component {
+  // => methods
+  change(arg) {
+    console.log(arg);
+  }
+  // => render
+  render() {
+    return (<div className="app">
+      <Child change={this.change}></Child>
+    </div>)
+  }
+}
+export default App;
+```
 
 
 

@@ -58,9 +58,7 @@ React 拥有较高的性能，代码逻辑非常简单，越来越多的人已�
 class MyComponent extends React.Component {
 	// render 是 Class based 元件唯一必須的方法（method）
 	render() {
-		return (
-			<div>Hello, World!</div>
-		);
+		return (<div>Hello, World!</div>);
 	}
 }
 
@@ -120,7 +118,7 @@ ReactDOM.render(<MyComponent/>, document.getElementById('app'));
 ## 3. npm 
 
 ```shell
-$ npm i -S react
+$ npm install react
 ```
 
 ## 4. react 脚手架
@@ -132,7 +130,7 @@ create-react-app 自动创建的项目是基于 Webpack + ES6 。
 stips 01：执行以下命令创建项目：
 
 ```shell
-# 全局安装create-react-app，如果不想全局安装，则不要-g。可能会很慢，可以使用cnpm来安装
+# 全局安装create-react-app
 $ npm install -g create-react-app
 # 查看版本，如果打印版本号，表示安装成功
 $ create-react-app --version
@@ -142,6 +140,8 @@ $ cd my-app/
 # 启动项目
 $ npm start
 ```
+
+> 提示：“Windows” 如果提示不是内部命令，去添加环境变量即可。
 
 ## 5. CodePen
 
