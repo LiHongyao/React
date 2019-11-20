@@ -4,7 +4,9 @@ mobx：https://cn.mobx.js.org/
 
 # 一、简介
 
-Redux 是 JavaScript 状态容器，提供可预测化的状态管理。Redux 的集成是非必选的。
+Redux 是 JavaScript 状态容器，提供可预测化的状态管理。
+
+> 提示：Redux 的集成是非必选的。
 
 **\# 单向数据流**
 
@@ -47,8 +49,6 @@ Redux 是负责组织 state 的工具，但你也要考虑它是否适合你的�
 - 一个组件需要改变全局状态
 - 一个组件需要改变另一个组件的状态
 
-使用webpack构建项目
-
 # 二、安装
 
 ```shell
@@ -70,11 +70,11 @@ $ yarn add redux
 - 通过 `subscribe(listener)` 注册监听器;
 - 通过调用`subscribe(listener)` 返回的函数注销监听器。
 
-store是只读的。redux没有提供直接修改数据的方法，改变state的唯一方法就是触发（**dispatch**） **action** 。
+> 注意：store是只读的，redux没有提供直接修改数据的方法，改变state的唯一方法就是触发（**dispatch**） **action** 。
 
 ## 2. Action
 
-action 是一个用于描述已发生事件的普通对象。简单来说，就是“你干了一件什么事情”。但是单单讲了你干的事情，我们并不知道你干的这件事产生了什么牛逼效果，于是有了一个专门负责描述某个行动对应产生某种效果的机构，叫做 **reducer** 。
+action 是一个用于描述已发生事件的 <ins>普通对象</ins>。简单来说，就是“你干了一件什么事情”。但是单单讲了你干的事情，我们并不知道你干的这件事产生了什么牛逼效果，于是有了一个专门负责描述某个行动对应产生某种效果的机构，叫做 **reducer** 。
 
 我们约定，action 内必须使用一个字符串类型的 `type` 字段来表示将要执行的动作。多数情况下，`type` 会被定义成字符串常量。当应用规模越来越大时，建议使用单独的模块或文件来存放 action。除了 `type` 字段外，action 对象的结构完全由你自己决定。
 
@@ -90,7 +90,7 @@ action 是一个用于描述已发生事件的普通对象。简单来说，就�
 Action 创建函数就是生成 action 的方法，只是简单的返回一个 action:
 
 ```js
-export const UPDATE_USERNAME = (username) => ({
+export const CHANGE_NAME = (name) => ({
     type: "CHANGE_NAME",
     name
 })
@@ -99,7 +99,7 @@ export const UPDATE_USERNAME = (username) => ({
 这样做将使 action 创建函数更容易被移植和测试。当调用 action 创建函数时，一般会把 action 创建函数的结果传给 `dispatch()` 方法即可发起一次 dispatch 过程。类似于Vuex中的commit提交一次Mutaions.
 
 ```js
-store.dishpatch(CHANGE_LOGIN_STATE(text));
+store.dishpatch(CHANGE_NAME("木子李"));
 ```
 
 ## 3. Reducer
@@ -110,7 +110,7 @@ store.dishpatch(CHANGE_LOGIN_STATE(text));
 
 # 四、场景代入
 
-=> 在开始之前，可以通过webpack构建个demo，然后安装redux
+=> 安装redux
 
 ```shell
 $ npm install redux
