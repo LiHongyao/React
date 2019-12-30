@@ -135,8 +135,8 @@ $ npm install -g create-react-app
 # 查看版本，如果打印版本号，表示安装成功
 $ create-react-app --version
 # 创建项目，my-app是项目名
-$ create-react-app my-app
-$ cd my-app/
+$ create-react-app hello-react
+$ cd hello-react/
 # 启动项目
 $ npm start
 ```
