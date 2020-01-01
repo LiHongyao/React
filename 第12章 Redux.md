@@ -331,9 +331,7 @@ export const reducers = combineReducers({
 
 # 五、搭配 React
 
-为了方便使用，Redux 的作者封装了一个 React 专用的库 [React-Redux](https://github.com/reactjs/react-redux)，本文主要介绍它。
-
-这个库是可以选用的。实际项目中，你应该权衡一下，是直接使用 Redux，还是使用 React-Redux。后者虽然提供了便利，但是需要掌握额外的 API，并且要遵守它的组件拆分规范。
+Redux 官方提供的 React 绑定库 [React-Redux](https://github.com/reactjs/react-redux)。
 
 ### 5.1. 安装 react-redux
 
@@ -577,111 +575,217 @@ VisibleTodoList.contextTypes = {
 
 `React-Redux`自动生成的容器组件的代码，就类似上面这样，从而拿到`store`。
 
-### 5.7. 实例：计数器
+### 5.7. 实战练习：计数器
 
-我们来看一个实例。下面是一个计数器组件，它是一个纯的展示组件。
+目录结构如下：
+
+![](./IMGS/react-redux-dir.png)
+
+我们先以最简单的组件为例，看看**组件**和**仓库**是如何通过react-redux建立连接的。在components文件夹下创建一个Counter.js组件，就是为了做个加减的组件。
 
 ```react
-// ./src/components/counter.js
-import React, {Component} from "react";
+import React from 'react';
 
-class Counter extends Component {
+export default class Counter extends React.Component {
+    constructor() {
+        super(); 
+        this.state = { number: 0 };
+    }
     render() {
-        // 获取props
-        const {value, onIncreaseClick} = this.props;
-        return (
-            <div style={{textAlign:"center"}}>
-                <span>{value}</span>
-                <button 
-                    style={{display:"block", margin:"0 auto"}}
-                    type="button"
-                    onClick={onIncreaseClick}>
-                    Increase
-                </button>
-            </div>
-        )
+        return (<div className="counter">
+            <button type="button">-</button>
+            {this.state.number}
+            <button  type="button">+</button>
+        </div>)
     }
 }
-
-export default Counter;
 ```
 
-上面代码中，这个 展示 组件有两个参数：`value` 和 `onIncreaseClick`。前者需要从`state`计算得到，后者需要向外发出 Action。
+接下来，在App.js文件中引入Counter组件
 
-接下来，我们定义一个action
+```react
+import React from 'react';
+import Counter from './components/Counter';
+import './App.css';
+
+function App() {
+  return (
+    <div className="App">
+      <Counter />
+    </div>
+  );
+}
+
+export default App;
+```
+
+下面就针对这个Counter组件来亲身使用一下redux & react-redux在项目里的使用情况吧。
+
+首先定义action-types
+
+```react
+// => ./src/store/action-types.js
+export const INCREASE = "INCREASE"; // 增加
+export const DECREASE = "DECREASE"; // 减少
+```
+
+> 提示：action-types里定义的都是根据各组件的需要才定义的类型常量，属于一一对应的一种关系。
+
+接下来，定义actions
 
 ```js
 // ./src/store/actions/index.js
-export const increaseAction = {
-  type: "INCREASE"
+import { INCREASE, DECREASE } from "../action-types";
+
+export const inCrease = (number) => ({ type: INCREASE, number });
+export const deCrease = (number) => ({ type: DECREASE, number });
+```
+
+接下来，处理reducers
+
+```react
+// => ./src/store/reducers/counter.js
+
+// 引入你组件需要的type
+import { INCREASE, DECREASE } from '../action-types';
+// 初始化状态
+const initState = { number: 0 };
+
+export const counter = (state = initState, action) => {
+    switch (action.type) {
+        case INCREASE:
+            return { number: state.number + action.number };
+        case DECREASE:
+            return { number: state.number + action.number };
+        default: {
+            return state;
+        }
+    }
 }
 ```
 
-接着，定义`value`到`state`的映射，以及`onIncreaseClick`到`dispatch`的映射。也就是所谓的容器组件
+合并reducers
 
-```react
-// ./src/containers/App.js
-import { connect } from "react-redux";
-import { increaseAction } from "../store/actions";
-import Counter from "../components/counter";
+```js
+// => ./src/store/reducers/index.js
+// 引入combineReducers，合并reducer
+import { combineReducers } from "redux";
+// 引入子reducer
+import { counter } from "./counter";
+import { list } from "./list";
+// 合并reducers
+export const reducer = combineReducers({
+    counter,
+    list
+});
+```
 
-const mapStateToProps = state  => ({
-    value: state.count
+> 提示：这里为了演示reducer 拆分 - 合并，所以随意写了个 list 来配合案例。
+
+> 注意：合并之后的数据模型结构如下：
+>
+> ```js
+> {
+> 	counter: { number: 0 },
+> 	list: []
+> }
+> ```
+
+生成store
+
+```js
+// => ./src/store/index.js
+
+// 引入redux提供的createStore方法来创建仓库
+import { createStore } from 'redux';
+// 引入所有用到的reducer
+import { reducer } from './reducers';
+// 导出store
+export const store = createStore(reducer);
+```
+
+定义容器组件
+
+```js
+// ./src/containers/counter.js
+
+// react-redux提供了connect方法，它是个高阶函数
+import { connect } from 'react-redux';
+import { inCrease, deCrease} from '../store/actions';
+// 引入视图组件
+import Counter from "../components/Counter";
+
+// => 定义state & disptach 的映射，也就是所谓的容器组件。
+const mapStateToProps = state => ({
+    counter: state.counter.number
 });
 
-const mapDishpatchToProps = dispatch => ({
-    onIncreaseClick: () => dispatch(increaseAction)
+const mapDispatchToProps = dispatch => ({
+    inCrease: (n) => dispatch(inCrease(n)),
+    deCrease: (n) => dispatch(deCrease(n))
 });
-
-// 使用connect方法生成容器组件
 export default connect(
     mapStateToProps,
-    mapDishpatchToProps
+    mapDispatchToProps
 )(Counter);
 ```
 
-然后，定义这个组件的reducer
+修改counter.js
 
 ```js
-// ./src/store/reducer/index.js
-const todoApp = (state = {count: 0}, action) => {
-    const count = state.count;
-    switch(action.type) {
-        case "INCREASE": 
-            return {count: count + 1}
-        default:
-            return state
+import React from 'react';
+
+export default class Counter extends React.Component {
+    render() {
+        // 通过mapStateToProps和mapDispatchToProps
+        // 将number状态还有add和minus方法都转化到了props属性上了
+        const { inCrease, deCrease, counter } = this.props;
+        return (<div className="counter">
+            <button type="button" onClick={() => deCrease(1)}>-</button>
+            {counter}
+            <button type="button" onClick={() => inCrease(1)}>+</button>
+        </div>)
     }
-};
-
-export default todoApp;
+}
 ```
 
-生成 `store` 对象。
+修改app.js
 
 ```js
-import { createStore } from 'redux'
-import todoApp from './reducers'
+import React from 'react';
+import Counter from './containers/counter';
+function App() {
+  return (
+    <div className="App">
+      <Counter />
+    </div>
+  );
+}
 
-export const store = createStore(todoApp)
+export default App;
 ```
 
-最后，使用`Provider`在根组件外面包一层
+最后，将redux 与 react 结合
 
 ```react
-import React from 'react'
-import ReactDOM from 'react-dom'
-import { Provider } from 'react-redux'
-import { store } from "./store"
-import App from './containers/App'
+import React from 'react';
+import ReactDOM from 'react-dom';
+import App from './App';
+// +++
+// Provider是个组件，有容乃大包容万物，不过只能有一个子元素
+import { Provider } from 'react-redux';
+import { store } from './store';
+// +++
 
 
+// 开始渲染了
+// render方法第一个参数是要渲染的组件，第二个是目标节点
 ReactDOM.render(
-  <Provider store={store}>
-    <App />
-  </Provider>,
-  document.getElementById('root')
-)
+    <Provider store={store}>
+        <App />
+    </Provider>,
+    document.getElementById('root')
+);
 ```
 
 # 六、react-router 路由库
