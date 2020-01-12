@@ -1,8 +1,12 @@
 # 一、概述
 
-- [Hook](https://react.docschina.org/docs/hooks-intro.html) 是 React 16.8 的新增特性。
-- Hook 是一些可以让你在函数组件里“钩入” React state 及生命周期等特性的函数。Hook 不能在 class 组件中使用。
-- Hook 遵循函数式编程的理念，主旨是在函数组件中引入类组件中的状态和生命周期，并且这些状态和生命周期函数也可以被抽离，实现复用的同时，减少函数组件的复杂性和易用性。
+\1. [Hook](https://react.docschina.org/docs/hooks-intro.html) 是 React 16.8 的新增特性。
+
+\2. Hook 是一些可以让你在函数组件里“钩入” React state 及生命周期等特性的函数。
+
+\3. Hook 不能在 class 组件中使用。
+
+\4. Hook 遵循函数式编程的理念，主旨是在函数组件中引入类组件中的状态和生命周期，并且这些状态和生命周期函数也可以被抽离，实现复用的同时，减少函数组件的复杂性和易用性。
 
 # 二、何时使用？
 
@@ -19,11 +23,10 @@
 
 ```react
 import React, { useState } from 'react';
-
 const Example = () => {
   // 定义状态
-  const [count, setCount] = useState(0);
-  const [user, setUser] = useState({username: "", password: ""});
+  const [count, setCount]       = useState(0);
+  const [user, setUser]         = useState({username: "", password: ""});
   const [complete, setComplete] = useState(false);
   return (
     <div>
@@ -67,7 +70,12 @@ const Example = () => {
 
 > 提示：
 >
-> 1、如果你熟悉 React class 的生命周期函数，你可以把 `useEffect` Hook 看做 `componentDidMount`，`componentDidUpdate` 和 `componentWillUnmount` 这三个函数的组合。
+> 1、如果你熟悉 React class 的生命周期函数，你可以把 `useEffect` Hook 看做：
+>
+> - `componentDidMount`
+> - `componentDidUpdate` 
+> -  `componentWillUnmount` 
+>这三个函数的组合。
 >
 > 2、使用 `useEffect` 调度的 effect 不会阻塞浏览器更新屏幕，这让你的应用看起来响应更快。大多数情况下，effect 不需要同步地执行。
 
@@ -170,8 +178,6 @@ export default App;
 ```
 
 在两个组件中使用相同的 Hook 会共享 state 吗？不会。自定义 Hook 是一种重用状态逻辑的机制(例如设置为订阅并存储当前值)，所以每次使用自定义 Hook 时，其中的所有 state 和副作用都是完全隔离的。
-
-## > 在做个Hook之间传递数据
 
 
 

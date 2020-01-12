@@ -10,7 +10,7 @@
 
 # 二、定义组件
 
-## 1. 函数定义组件
+## 1. 函数组件
 
 ```react
 // => 普通函数
@@ -31,7 +31,7 @@ const App = () => (
 }
 ```
 
-## 2. 类定义组件
+## 2. 类组件
 
 ```react
 import React from "react";
@@ -190,7 +190,7 @@ import propTypes from 'prop-types';
 
 ```react
 import React from "react";
-import propTypes from "prop-types";
+import PropTypes from "prop-types";
 class Child extends React.Component {
     render() {
         return (<div className="child"></div>)
@@ -198,12 +198,13 @@ class Child extends React.Component {
 }
 // 属性验证
 Child.propTypes = {
-    msg: propTypes.string,
-    num: propTypes.oneOfType([
-        propTypes.string,
-        propTypes.number
-    ]),
-    type: propTypes.oneOf(["邮箱", "手机"])
+	message: PropTypes.string,
+	id: PropTypes.oneOfType([
+		PropTypes.string,
+		PropTypes.number
+	]),
+	number: PropTypes.number.isRequired,
+	type: PropTypes.oneOf(["手机号码", "用户名", "邮箱"])
 }
 export default Child;
 ```
@@ -215,11 +216,11 @@ export default Child;
 ```react
 // 类型检测
 Child.propTypes = {
-    msg: PropTypes.string
+  message: PropTypes.string
 }
 // 设置默认值
 Child.defaultProps = {
-    msg: '通知：下午17：00，教学部在会议室1开会！'
+	message: "Hello, PropTypes!"
 }
 ```
 

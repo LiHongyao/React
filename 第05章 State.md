@@ -14,7 +14,7 @@ class LocaleTime extends React.Component {
     // => constructor
     constructor(props) {
         super(props);
-        // 初始化状态
+        // init states
         this.state = {
             date: new Date()
         }
@@ -109,12 +109,6 @@ this.setState({
 this.setState((prevState, props) => ({
   counter: prevState.counter + props.increment
 }));
-// 等价于
-this.setState(function(prevState, props) {
-  return {
- 		 counter: prevState.counter + props.increment
-	}
-})
 ```
 
 ## 3、状态合并更新
@@ -155,9 +149,7 @@ componentDidMount() {
 
 # 四、数据自顶向下流动
 
-父组件或子组件都不能知道某个组件是有状态还是无状态，并且它们不应该关心某组件是被定义为一个函数还是一个类。
-
-这就是为什么状态通常被称为局部或封装。 除了拥有并设置它的组件外，其它组件不可访问。
+父组件或子组件都不能知道某个组件是有状态还是无状态，并且它们不应该关心某组件是被定义为一个函数还是一个类。这就是为什么状态通常被称为局部或封装。 除了拥有并设置它的组件外，其它组件不可访问。
 
 组件可以选择将其状态作为属性传递给其子组件：
 
