@@ -1,8 +1,12 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import PropTypes from 'prop-types';
+import Context from '../../context';
+import ClassComp from '../classComp/classComp';
 
 // function components
 export const Child = (props) => {
+	let data = useContext(Context);
+	console.log(data);
 	// state hook
 	const [count, setCount] = useState(0);
 	// effect hook
@@ -19,7 +23,9 @@ export const Child = (props) => {
 	// JSX
 	return (
 		<div className="child">
+			<ClassComp />
 			<p>「子组件」</p>
+			<p>context: {data.num}</p>
 			<p>{props.message}</p>
 			<p>{props.number}</p>
 			<button onClick={() => setCount(count + 1)}>您点击了我{count}次！</button>
