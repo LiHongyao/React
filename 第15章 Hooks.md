@@ -273,17 +273,84 @@ const UseReducer = (props) => {
 export default UseReducer;
 ```
 
-## 05. [useCallback](https://react.docschina.org/docs/hooks-reference.html#usecallback)
+## 05. [useRef](https://react.docschina.org/docs/hooks-reference.html#useref)
 
-## 06. [useMemo](https://react.docschina.org/docs/hooks-reference.html#usememo)
+useRef 用来生成对 DOM 对象的引用
 
-## 07. [useRef](https://react.docschina.org/docs/hooks-reference.html#useref)
+```react
+import React, { useRef } from 'react';
+
+const UseRefTest = (props) => {
+    let usernameInput = useRef(null);
+    let passwordInput = useRef(null);
+    // => events
+    const handleButtonClick = () => {
+        let username = usernameInput.current.value;
+        let password = passwordInput.current.value;
+        if(username === "admin" && password === "123") {
+            window.console.log("login success!");
+        }else {
+            window.console.log("login error!");
+        }
+    }
+    return (
+        <React.Fragment>
+            <h3>3. useRef</h3>
+            <input ref={usernameInput} placeholder="账号" type="text"></input>
+            <input ref={passwordInput} placeholder="密码" type="password"></input>
+            <br />
+            <button onClick={handleButtonClick}>登陆</button>
+        </React.Fragment>
+    )
+}
+export default UseRefTest;
+```
+
+## 06. [useCallback](https://react.docschina.org/docs/hooks-reference.html#usecallback)
+
+## 07. [useMemo](https://react.docschina.org/docs/hooks-reference.html#usememo)
 
 ## 08. [useImperativeHandle](https://react.docschina.org/docs/hooks-reference.html#useimperativehandle)
 
+通过 useImperativeHandle 用于让父组件获取子组件内的索引，该 Hook 应该与forwardRef 结合使用，如下所示：
+
+```react
+// -> 文件位置：app.js
+import React, {useRef, useImperativeHandle, useEffect, forwardRef } from 'react';
+
+const Child = (props, ref) => {
+  const inputRef = useRef(null);
+  useImperativeHandle(ref, () => inputRef.current);
+  return (
+    <input ref={inputRef}/>
+  )
+}
+
+const ChildInput = forwardRef(Child);
+
+function App() {
+  const inputRef = useRef(null);
+  useEffect(() => {
+    inputRef.current.focus();
+  }, [])
+  return (
+    <div className="app">
+      <ChildInput ref={inputRef}/>
+    </div>
+  )
+}
+export default App;
+```
+
 ## 09. [useLayoutEffect](https://react.docschina.org/docs/hooks-reference.html#uselayouteffect)
 
-## 10. [useDebugValu](https://react.docschina.org/docs/hooks-reference.html#usedebugvalue)
+大部分情况下，使用 useEffect 就可以帮我们处理组件的副作用，但是如果想要同步调用一些副作用，比如对 DOM 的操作，就需要使用 useLayoutEffect，useLayoutEffect 中的副作用会在 DOM 更新之后同步执行。
+
+> 官方提示：
+>
+> 如果你正在将代码从 class 组件迁移到使用 Hook 的函数组件，则需要注意 useLayoutEffect 与 componentDidMount、componentDidUpdate 的调用阶段是一样的。但是，我们推荐你一开始先用 useEffect，只有当它出问题的时候再尝试使用 useLayoutEffect。
+
+## 10. [useDebugValue](https://react.docschina.org/docs/hooks-reference.html#usedebugvalue)
 
 # 三、自定义Hook
 
