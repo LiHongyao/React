@@ -130,7 +130,7 @@ function App() {
   </div>)
 }
 
-export default App;x
+export default App;
 ```
 
 ## 2. 插槽
@@ -198,12 +198,16 @@ class Child extends React.Component {
 }
 // 属性验证
 Child.propTypes = {
+  // => messages属性类型为字符串类型
 	message: PropTypes.string,
+  // => id属性类型为字符串类型或者数值类型
 	id: PropTypes.oneOfType([
 		PropTypes.string,
 		PropTypes.number
 	]),
+  // => number属性类型为数值类型并且是必须的
 	number: PropTypes.number.isRequired,
+  // => type 属性的值为数值元素中的任意一个
 	type: PropTypes.oneOf(["手机号码", "用户名", "邮箱"])
 }
 export default Child;

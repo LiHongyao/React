@@ -20,12 +20,16 @@ React [不强制要求](https://react.docschina.org/docs/react-without-jsx.html)
 你可以任意地在 JSX 当中使用 JavaScript 表达式，在 JSX 当中的表达式要包含在大括号`{}`里：
 
 ```react
+// 文件位置：index.js
+import React from 'react'
+import ReactDOM from 'react-dom'
+
 let name = '木子李', isLogin = true;
 ReactDOM.render(
     <div class="box">
-        {name} - { isLogin ? "已登录" : "未登录"}
+        {name} - { isLogin ? "已登录" : "未登录" }
     </div>,
-    document.getElementById('root')
+    document.getElementById('root')   
 );
 ```
 
@@ -33,12 +37,9 @@ ReactDOM.render(
 
 JSX 本身也是一个表达式，在编译之后，JSX 表达式会被转为普通 JavaScript 函数调用，并且对其取值后得到 JavaScript 对象。也就是说，你可以在 `if` 语句和 `for` 循环的代码块中使用 JSX，将 JSX 赋值给变量，把 JSX 当作参数传入，以及从函数中返回 JSX：
 
-```typescript
+```react
 function getElement(name) {
-  if (name) {
-    return <p>Hello, {name}!</p>
-  }
-  return <p>Hello</p>
+  return name ? <p>Hello, {name}!</p> : <p>Hello</p>;
 }
 ```
 
