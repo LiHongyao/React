@@ -55,7 +55,7 @@ import React from 'react';
 import { AppContext } from '../../context';
 class Child extends React.Component {
   	// 订阅上下文
-    static contextType = Context;
+    static contextType = AppContext;
     render() {
         const { name, gender } = this.context;
         return (

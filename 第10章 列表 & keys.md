@@ -5,12 +5,14 @@ https://doc.react-china.org/docs/lists-and-keys.html
 你可以通过使用 ` {}` 在JSX内构建一个元素集合。
 
 ```react
+import React from 'react'
 const List = (props) => {
-  let listItems = props.list.map((item, index) => {
-    return <li key={index}>{item}</li>
-  });
-  return <ul>{listItems}</ul>
-};
+    let Lis = props.items.map((item,index) => {
+        return <li key={index}>{item}</li>
+    })
+    return (<ul>{Lis}</ul>)
+}
+export default List;
 ```
 
 # 二、Keys
