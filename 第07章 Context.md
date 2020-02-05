@@ -14,22 +14,32 @@ Context 提供了一个无需为每层组件手动添加 props，就能在组件
 
 
 
-# 二、基础使用
+# 二、API
 
-首先定义一个 context.js 文件
+- [React.createContext](https://react.docschina.org/docs/context.html#reactcreatecontext)：创建上下文
+- [Context.Provider](https://react.docschina.org/docs/context.html#contextprovider)：分发
+- [Class.contextType](https://react.docschina.org/docs/context.html#classcontexttype)：订阅单个context
+- [Context.Consumer](https://react.docschina.org/docs/context.html#contextconsumer)：订阅多个context
+
+# 二、静态传递
+
+静态传递数据只是通过上下文将数据分发至子组件
+
+./src/context.js
 
 ```react
 import React from 'react';
 export const AppContext = React.createContext(null);
 ```
 
-然后在App.js中引用
+./src/app.js
 
 ```react
 import React, { useState } from 'react';
 import { AppContext } from './context'
 function App() {
   return (
+    {/*分发 { name: 'Muzili', gender: 'male'} 数据给所有的子组件*/}
     <AppContext.Provider value={{ name: 'Muzili', gender: 'male'}}>
        <div className="App">...</div>
     </AppContext.Provider> 
@@ -38,12 +48,13 @@ function App() {
 export default App;
 ```
 
-最后在child.js中
+./src/components/child.js
 
 ```react
 import React from 'react';
 import { AppContext } from '../../context';
 class Child extends React.Component {
+  	// 订阅上下文
     static contextType = Context;
     render() {
         const { name, gender } = this.context;
@@ -58,40 +69,34 @@ class Child extends React.Component {
 export default Child;
 ```
 
-# 三、动态Context
+# 三、动态传递
+
+动态传递即将需要分发的数据绑定在state上，并且分发修改状态的方法给子组件使用。
 
 ./src/context.js
 
 ```js
 import React from 'react';
-
-// 定义数据模型
-export const themes = {
-    light: {
-        color: '#f5f5f5',
-        background: 'orange'
-    },
-    dark: {
-        color: '#f5f5f5',
-        background: '#333333'
-    }
-}
-// 导出上下文
-export const AppContext = React.createContext(themes.dark);
+// 定义上下文模型
+export const AppContext = React.createContext({
+    count: 0,
+    increment: () => {}
+});
 ```
 
 ./src/components/child.js
 
-```react
+```js
 import React from 'react'
-import { AppContext } from '../../context';
+import { AppContext } from '../../context'
 
 class Child extends React.Component {
+    // 订阅上下文
     static contextType = AppContext;
     render() {
-        let { color, background } = this.context;
+        let { count, increment } = this.context;
         return (
-            <button {...this.props} style={{ color, background }}>Click Me</button>
+            <button onClick={increment}>Click {count} times!</button>
         )
     }
 }
@@ -99,56 +104,59 @@ class Child extends React.Component {
 export default Child;
 ```
 
-./src/components/node.js
-
-```react
-import React from 'react'
-import Child from '../Child/Child'
-class Node extends React.Component {
-    render() {
-        return (
-            <Child onClick={this.props.changeTheme}/>
-        )
-    }
-}
-export default Node;
-```
-
 ./src/app.js
 
 ```react
 import React from 'react';
-import Node from './components/Node/Node'
-import { AppContext, themes } from './context';
+import Child from './components/Child/Child'
 
-class App extends React.Component { 
+import { AppContext } from './context';
+
+// 定义一个中间组件 => App > Middle > Child
+const Middle = () => {
+  return (
+    <Child />
+  )
+}
+
+class App extends React.Component {
   constructor() {
     super();
+    // 定义状态
     this.state = {
-      theme: themes.light,
+      count: 0,
+      // 绑定修改状态的方法，用于分发
+      increment: this.increment.bind(this)
     };
   }
   // => methods
-  // 切换主题
-  toggleTheme(){
+  increment() {
     // 异步
     this.setState(state => ({
-      theme: state.theme === themes.light ? themes.dark : themes.light
+      count: state.count + 1 
     }));
   }
+  // => render
   render() {
     return (
-      <AppContext.Provider value={this.state.theme}>
+      <AppContext.Provider value={this.state}>
         <div className="App">
-          <Node changeTheme={this.toggleTheme.bind(this)}/>
+          <Middle />
         </div>
       </AppContext.Provider >
     );
   }
 }
-
 export default App;
 ```
+
+
+
+
+
+
+
+
 
 
 
