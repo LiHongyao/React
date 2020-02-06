@@ -21,23 +21,49 @@
 
 # 二、API
 
-## 01. [useState](https://react.docschina.org/docs/hooks-reference.html#usestate)  
+## 01. [useState](https://react.docschina.org/docs/hooks-reference.html#usestate)  *
+
+在类组件当中，state 需要在构造函数中来设置：
+
+```js
+// => define states
+constructor() {
+	super();
+	this.state = {}
+}
+// => update states
+this.setState(state => ({}));
+```
+
+在函数组件中，通过useState定义状态：
 
 ```react
-import React, { useState } from 'react';
-const Test = (props) => {
-    // 定义状态
-    const [count, setCount] = useState(0);
+import React, { useState } from 'react'
+const Test = () => {
+    // => define states
+    const [name, setName] = useState("保密");
+    const [email, setEmail] = useState("保密");
+    const [age, setAge] = useState(0);
+    // => Events
+    const handleInput = (event) => {
+        event.persist();
+        const { id, value } = event.target;
+        switch (id) {
+            // => update states
+            case 'name': setName(value); break;
+            case 'email': setEmail(value); break;
+            case 'age': setAge(value); break;
+            default: throw new Error()
+        }
+    }
     return (
-        <div>
-            {/* 读取状态 */}
-            <p>You clicked {count} times</p>
-            {/* 修改状态 */}
-            <button onClick={() => setCount(count + 1)}>
-                Click me
-            </button>
-        </div>
-    );
+        <React.Fragment>
+            <input id='name' type='text' placeholder='姓名' onInput={handleInput} />
+            <input id='age' type='number' placeholder='年龄' onInput={handleInput} />
+            <input id='email' type='email' placeholder='邮箱' onInput={handleInput} />
+            <p>用户信息：{name} -  {age} - {email}</p>
+        </React.Fragment>
+    )
 }
 export default Test;
 ```
@@ -48,39 +74,62 @@ export default Test;
 >
 > \> 多次使用useState可定义多个状态。
 
-## 02. [useEffect](https://react.docschina.org/docs/hooks-reference.html#useeffect)
+## 02. [useEffect](https://react.docschina.org/docs/hooks-reference.html#useeffect) *
 
 Effect Hook 可以让你在函数组件中执行副作用操作（数据获取，设置订阅以及手动更改 React 组件中的 DOM 都属于副作用）。
 
 ```react
-import React, { useState, useEffect } from 'react';
-const Test = (props) => {
-    // State
-    const [count, setCount] = useState(0);
-    // Effect
+import React, { useState, useEffect } from 'react'
+const Test = () => {
+    // => define states
+    const [name, setName] = useState("保密");
+    const [email, setEmail] = useState("保密");
+    const [age, setAge] = useState(0);
+    // => effect
+    /*
+    componentDidMount() {
+        // 1. 修改标题
+        // 2. 前后端交互
+        // 3. 设置订阅/处理一些其他的业务逻辑
+    }*/
     useEffect(() => {
-      document.title = "Hello Hooks";
+        // 修改标题
+        document.title = 'Hello-Hooks';
     });
-    useEffect(() => {
-      console.log(`count：${count}`);
+    useEffect(() => { // mount/update/unmount
+        console.log(name);
     });
+    useEffect(() => { 
+        console.log(age);
+    });
+
+    // => Events
+    const handleInput = (event) => {
+        event.persist();
+        const { id, value } = event.target;
+        switch (id) {
+            // => update states
+            case 'name': setName(value); break;
+            case 'email': setEmail(value); break;
+            case 'age': setAge(value); break;
+            default: throw new Error()
+        }
+    }
     return (
-        <div>
-            {/* 读取状态 */}
-            <p>You clicked {count} times</p>
-            {/* 修改状态 */}
-            <button onClick={() => setCount(count + 1)}>
-                Click me
-            </button>
-        </div>
-    );
+        <React.Fragment>
+            <input id='name' type='text' placeholder='姓名' onInput={handleInput} />
+            <input id='age' type='number' placeholder='年龄' onInput={handleInput} />
+            <input id='email' type='email' placeholder='邮箱' onInput={handleInput} />
+            <p>用户信息：{name} -  {age} - {email}</p>
+        </React.Fragment>
+    )
 }
 export default Test;
 ```
 
 > 提示：
 >
-> 1、如果熟悉 React class的生命周期，你可以把 `useEffect` Hook 看做以下三个声明周期函数的组合：
+> 1、如果熟悉 React class的生命周期，你可以把 `useEffect` Hook 看做以下三个生命周期函数的组合：
 >
 > - componentDidMount
 > - componentDidUpdate
@@ -92,9 +141,9 @@ export default Test;
 
 ```react
 useEffect(() => {
-  console.log(count);
+  // => 业务逻辑
   return () => {
-    // Removal of side effects...
+    // => 移除监听器/清除保存的数据/...
   }
 });
 ```
@@ -115,45 +164,69 @@ useEffect(() => {
 
 ```react
 useEffect(() => {
-  console.log(count);
-}, [count]);
+  console.log(name);
+}, [name]);
 ```
 
-上述代码，会在count变量变化时才会触发effect。
+上述代码，会在name变量变化时才会触发effect。
 
-如果想执行只运行一次的 effect（仅在组件挂载和卸载时执行），可以传递一个空数组（[]）作为第二个参数。这就告诉 React 你的 effect 不依赖于 props 或 state 中的任何值，所以它永远都不需要重复执行。这并不属于特殊情况 —— 它依然遵循依赖数组的工作方式。
+如果想执行只运行一次的 effect（仅在组件挂载和卸载时执行），可以传递一个空数组（`[]`）作为第二个参数。
 
-## 03. [useContext](https://react.docschina.org/docs/hooks-reference.html#usecontext)
+```react
+useEffect(() => {
+  $.ajax(); 
+  document.title = 'Hello-Hooks';
+}, []);
+```
+
+## 03. [useContext](https://react.docschina.org/docs/hooks-reference.html#usecontext) * 
 
 useContext(MyContext) 相当于 class 组件中的 static contextType = MyContext 或者 <MyContext.Consumer>。
 
+./src/context.js
+
+```js
+import {createContext} from 'react';
+
+const AppContext = createContext(null);
+
+export default AppContext;
+```
+
+./src/app.js
+
 ```react
-import React, { useState, useContext, createContext } from 'react';
-
-// 创建一个 context
-const AppContext = createContext(0);
-
-// 创建一个 组件
-const Item = (props) => {
-  const count = useContext(AppContext);
+import React from 'react';
+import Test from './components/Test';
+import AppContext from './context';
+const App = () => {
   return (
-    <p>Context Values：{count}</p>
-  )
-}
-
-function App() {
-  const [count, setCount] = useState(0)
-  return (
-    <div className="app">
-      <p>click times: {count}</p>
-      <button onClick={() => { setCount(count + 1) }}>Click Me</button>
-      <AppContext.Provider value={count}>
-        <Item></Item>
-      </AppContext.Provider>
-    </div>
-  )
+    <AppContext.Provider value={{username: 'Muzili', tel: '17398888669'}}>
+      <div className="App">
+        < Test />
+      </div>
+    </AppContext.Provider>
+  );
 }
 export default App;
+```
+
+./src/components/Test.js
+
+```react
+import React, { useContext } from 'react'
+import AppContext from '../context';
+
+const Test = () => {
+    // => context
+    let { username, tel } = useContext(AppContext);
+    return (
+        <React.Fragment>
+            <p>AppContext：{username} - {tel}</p>
+        </React.Fragment>
+    )
+}
+export default Test;
 ```
 
 > 注意： useContext 的参数必须是 context 对象本身
@@ -273,7 +346,7 @@ const UseReducer = (props) => {
 export default UseReducer;
 ```
 
-## 05. [useRef](https://react.docschina.org/docs/hooks-reference.html#useref)
+## 05. [useRef](https://react.docschina.org/docs/hooks-reference.html#useref) *
 
 useRef 用来生成对 DOM 对象的引用
 
