@@ -231,7 +231,7 @@ export default Test;
 
 > 注意： useContext 的参数必须是 context 对象本身
 
-## 04. [useReducer](https://react.docschina.org/docs/hooks-reference.html#usereducer)
+## 04. [useReducer](https://react.docschina.org/docs/hooks-reference.html#usereducer) *
 
 语法形式：
 
@@ -243,6 +243,7 @@ const [state, dispatch] = useReducer(reducer, initState);
 
 ```react
 import React, { useReducer } from 'react';
+
 // => state
 const initialState = {
     count: 0
@@ -280,17 +281,26 @@ useReducer，可以帮助我们集中式的处理复杂的state管理。但如�
 
 ```js
 // 文件位置：src/store/index.js
+
 // => 初始化数据
 export const initialState = {
+    message: '众志成城，抗疫救灾',
     count: 0
 };
+
 // => Reducer 处理函数
-export const reducer = (state, action) => {
+export const reducer = (state = initialState, action) => {
     switch (action.type) {
         case 'increment':
-            return { count: state.count + 1 };
+            return {
+                ...state,
+                count: state.count + 1
+            };
         case 'decrement':
-            return { count: state.count + 1 };
+            return {
+                ...state,
+                count: state.count - 1
+            };
         default: {
             throw new Error();
         }
@@ -300,50 +310,56 @@ export const reducer = (state, action) => {
 \2. 创建一个Context上下文
 ```js
 // 文件位置：src/context.js
-import React from 'react';
+import { createContext } from 'react';
 
-const AppContext = React.createContext();
+const AppContext = createContext(null);
 
 export default AppContext;
 ```
 \3. 在App.js 中使用useReducer，然后将dispatch通过上下文（context）共享给子组件
 ```react
-// 文件位置：src/app.js
-import React, {useReducer} from 'react';
-import UseReducer from './components/useReducer';
+import React, { useReducer } from 'react';
 import AppContext from './context';
-import {initialState, reducer } from './store';
+import { initialState, reducer } from './store';
 
-function App() {
+import Child from './components/Child';
+
+const App = () => {
+  // => state：状态
+  // => dispatch：触发action/数据
   const [state, dispatch] = useReducer(reducer, initialState);
+
   return (
-    <AppContext.Provider value={{state, dispatch}}>
-      <div className="app">
-        <UseReducer />
+    // => 通过上下文将state、dispatch 分发给子组件
+    <AppContext.Provider value={{ state, dispatch }}>
+      <div className="App">
+        < Child />
       </div>
     </AppContext.Provider>
-  )
+  );
 }
 export default App;
 ```
 \4. 在子组件中通过useContext拿到state、dispatch使用
 ```react
-// 文件位置：src/components/useReducer.js
-import React, {useContext} from 'react';
+import React, { useContext } from 'react';
 import AppContext from '../context';
 
-const UseReducer = (props) => {
-    const {state, dispatch } = useContext(AppContext);
+const Child = () => {
+    const { state, dispatch } = useContext(AppContext);
     return (
-        <React.Fragment>
-            <p>Count：{state.count}</p>
-            <button onClick={() => dispatch({ type: 'increment' })}>+</button>
-            <button onClick={() => dispatch({ type: 'decrement' })}>-</button>
-        </React.Fragment>
+        <div className='Child'>
+            {/* 读取状态 */}
+            <p>count: {state.count}</p>
+            <p>message: {state.message}</p>
+            {/* 触发action更新数据 */}
+            <button onClick={() => { dispatch({ type: 'increment' }) }}>加</button>
+            <button onClick={() => { dispatch({ type: 'decrement' }) }}>减</button>
+        </div>
     )
 };
 
-export default UseReducer;
+export default Child;
 ```
 
 ## 05. [useRef](https://react.docschina.org/docs/hooks-reference.html#useref) *
