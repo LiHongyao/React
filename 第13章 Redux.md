@@ -16,7 +16,7 @@ Redux 是 JavaScript 状态容器，提供可预测化的状态管理。
 
 这个例子当中，数据中心我们视为父组件，身份证就是子组件通过父组件接收到的props，你不能直接修改自己的身份证，也就是你不能直接 this.props.name = '帅哥'，只能通知父组件去修改这个props，即调用父组件提供的changeName方法来操作：this.props.changeName('帅哥')，这个过程事实上是修改了父组件的state，从而使得子元素接收到的数据也发生了改变。
 
-所以数据由始至终都是从父元素流向子元素，我们称为数据单向流动。
+所以数据由始至终都是从父元素流向子元素，我们称为**数据单向流动**。
 
 我们回想一下我们之前构建过的所有react应用，数据都是由最顶层父组件（页面组件）一层层向下传递的。
 
@@ -53,7 +53,7 @@ Redux 是负责组织 state 的工具，但你也要考虑它是否适合你的�
 
 ```shell
 # NPM
-$ npm indestall redux  
+$ npm install redux  --save
 # YARN
 $ yarn add redux
 ```
@@ -74,7 +74,7 @@ $ yarn add redux
 
 ## 2. Action
 
-action 是一个用于描述已发生事件的 <ins>普通对象</ins>。简单来说，就是“你干了一件什么事情”。但是单单讲了你干的事情，我们并不知道你干的这件事产生了什么牛逼效果，于是有了一个专门负责描述某个行动对应产生某种效果的机构，叫做 **reducer** 。
+action 是一个用于描述已发生事件的 <ins>普通对象</ins>。简单来说，就是“你干了一件什么事情”。但是单单讲了你干的事情，我们并不知道你干的这件事产生了什么牛逼效果，于是有了一个专门负责描述某个action对应产生某种效果的机构，叫做 **reducer** 。
 
 我们约定，action 内必须使用一个字符串类型的 `type` 字段来表示将要执行的动作。多数情况下，`type` 会被定义成字符串常量。当应用规模越来越大时，建议使用单独的模块或文件来存放 action。除了 `type` 字段外，action 对象的结构完全由你自己决定。
 
@@ -106,7 +106,7 @@ store.dishpatch(CHANGE_NAME("木子李"));
 
 只是一个接收state和action，并返回新的state的函数。
 
-> 注意：reducer 一定要保持纯净，只要传入参数相同，返回计算得到的下一个 state 就一定相同。没有特殊情况、没有副作用，没有 API 请求、没有变量修改，单纯执行计算。 ——redux官方文档
+> reducer 一定要保持纯净，只要传入参数相同，返回计算得到的下一个 state 就一定相同。没有特殊情况、没有副作用，没有 API 请求、没有变量修改，单纯执行计算。 ——redux官方文档
 
 # 四、场景代入
 
@@ -122,7 +122,7 @@ $ yarn add redux
 ```typescript
 {
     card: {
-        name: '木子李',
+        name: 'Muzili',
         picture: 'a.jpg'
     },
     dialog: {
@@ -133,27 +133,34 @@ $ yarn add redux
 
 => 创建actions： store/actions.js
 
-```typescript
+```js
 // 1. 修改名字
-export const CHANGE_NAME = (name) => ({
+const CHANGE_NAME = (name) => ({
     type: "CHANGE_NAME",
     name
 });
 // 2. 修改照片
-export const CHANGE_PICTURE = (picture) => ({
+const CHANGE_PICTURE = (picture) => ({
     type: "CHANGE_PICTURE",
     picture
 });
 
 // 3. 显示弹框
-export const SHOW_DIALOG = () => ({
+const SHOW_DIALOG = () => ({
     type: "SHOW_DIALOG"
 });
 
 // 4. 关闭弹框
-export const CLOSE_DIALOG = () => ({
+const CLOSE_DIALOG = () => ({
     type: "CLOSE_DIALOG"
 });
+
+module.exports = {
+    CHANGE_NAME,
+    CHANGE_PICTURE, 
+    SHOW_DIALOG,
+    CLOSE_DIALOG
+}
 ```
 
 > 提示：action 载荷可选。
@@ -161,6 +168,7 @@ export const CLOSE_DIALOG = () => ({
 => 创建reducers：store/reducers.js
 
 ```typescript
+// => 默认数据结构
 const initialState = {
     card: {
         name: 'Jack',
@@ -168,85 +176,93 @@ const initialState = {
     },
     dialog: {
         status: false
-    }
+    },
 };
 
-export const reducers = (state = initialState, action) => {
+
+// => reducers
+const reducers = (state = initialState, action) => {
+    // => 根据action.type修改state
     switch (action.type) {
-        case "CHANGE_NAME": {
-            return Object.assign({}, state, {
-               card: {
-                   ...state.card,
-                   name: action.name
-               }
-            })
-        } break;
-        case "CHANGE_PICTURE": {
-            return Object.assign({}, state, {
-                card: {
-                    ...state.card,
-                    picture: action.picture
-                }
-             })
-        } break;
-        case "SHOW_DIALOG": {
-            return Object.assign({}, state, {
-                dialog: {
-                    status: true
-                }
-            })
-        } break;
-        case "CLOSE_DIALOG": {
-            return Object.assign({}, state, {
-                dialog: {
-                    status: false
-                }
-            })
-        } break;
+        case "CHANGE_NAME":
+            return {
+                ...state,
+                card: { ...state.card, name: action.name },
+                dialog: { ...state.dialog }
+            };
+        case "CHANGE_PICTURE":
+            return {
+                ...state,
+                card: { ...state.card, picture: action.picture },
+                dialog: { ...state.dialog }
+            };
+        case "SHOW_DIALOG":
+            return {
+                ...state,
+                card: { ...state.card },
+                dialog: { status: true }
+            };
+        case "CLOSE_DIALOG":
+            return {
+                ...state,
+                card: { ...state.card },
+                dialog: { status: false }
+            };
         default:
             return state;
     }
+}
+
+module.exports = {
+    reducers
 }
 ```
 
 => 处理store：store/index.js
 
 ```js
-import { createStore } from "redux";
-import { reducers } from "./reducers";
+const { createStore } =  require("redux");
+const { reducers } = require('./reducer');
+
 const initialState = {
     card: {
-        name: 'Jack',
+        name: 'Muzili',
         picture: 'a.jpg'
     },
     dialog: {
         status: false
-    }
+    },
 };
-export const store = createStore(reducers, initialState);
+
+// 根据reducers创建store对象
+const store = createStore(reducers, initialState);
+
+module.exports = {
+    store
+}
 ```
 
 => 验证：index.js
 
 ```typescript
-// 导入store
-import { store } from "./store";
-// 导入action
-import {
+// => 导入store
+const { store } = require("./store");
+// => 导入actions
+const {
     CHANGE_NAME,
     CHANGE_PICTURE,
     SHOW_DIALOG,
     CLOSE_DIALOG
-} from "./store/actions"
+} = require("./store/actions");
 
 // 打印初始状态
-console.log(store.getState());
+console.log("初始化状态：",store.getState());
 
 // 注册监听，打印日志 => 注意 subscribe() 返回一个函数用来注销监听器
-const unsubscribe = store.subscribe(() => console.log(store.getState()))
+const unsubscribe = store.subscribe(() => console.log("数据已更新：", store.getState()))
 
 // 发起一系列 action
-store.dispatch(CHANGE_NAME("木子李"));
+store.dispatch(CHANGE_NAME("lihy"));
 store.dispatch(CHANGE_PICTURE("b.jpg"));
 store.dispatch(SHOW_DIALOG());
 store.dispatch(CLOSE_DIALOG());
@@ -256,7 +272,18 @@ store.dispatch(CLOSE_DIALOG());
 unsubscribe();
 ```
 
-打开浏览器，查看控制台输出结果/
+接下来在控制台执行脚本：`node index.js`， 输出结果如下：
+
+```
+初始化状态： {
+  card: { name: 'Muzili', picture: 'a.jpg' },
+  dialog: { status: false }
+}
+数据已更新： { card: { name: 'lihy', picture: 'a.jpg' }, dialog: { status: false } }
+数据已更新： { card: { name: 'lihy', picture: 'b.jpg' }, dialog: { status: false } }
+数据已更新： { card: { name: 'lihy', picture: 'b.jpg' }, dialog: { status: true } }
+数据已更新： { card: { name: 'lihy', picture: 'b.jpg' }, dialog: { status: false } }
+```
 
 **# 优化 - 拆分reducer**
 
@@ -273,58 +300,61 @@ unsubscribe();
 
 => card.js
 
-```typescript
-export const card = (state = {}, action) => {
-    switch(action.type) {
-        case "CHANGE_NAME": {
-            return {
-                ...state,
-                name: action.name
-            }
-        }break;
-        case "CHANGE_PICTURE": {
-            return {
-                ...state,
-                picture: action.picture
-            }
-        }break;
-        default: 
+```js
+const card = (state = {}, action) => {
+    switch (action.type) {
+        case "CHANGE_NAME":
+            return { ...state, name: action.name }
+        case "CHANGE_PICTURE":
+            return { ...state, picture: action.picture }
+        default:
             return state;
     }
+}
+
+module.exports = {
+    card
 }
 ```
 
 => dialog.js
 
 ```js
-export const dialog = (state = {}, action) => {
-    switch(action.type) {
-        case "SHOW_DIALOG": {
-            return {status: true}
-        }break;
-        case "CLOSE_DIALOG": {
-            return {status: false}
-        }break;
-        default: 
+const dialog = (state = {}, action) => {
+    switch (action.type) {
+        case "SHOW_DIALOG":
+            return { status: true }
+        case "CLOSE_DIALOG":
+            return { status: false }
+        default:
             return state;
     }
 }
+
+module.exports = {
+    dialog
+};
 ```
 
 ==> index.js 合并reducer
 
 ```js
 // 引入combineReducers，合并reducer
-import {combineReducers} from "redux";
+const { combineReducers } = require("redux");
 // 引入两个子reducer
-import {card} from "./card";
-import {dialog} from "./dialog";
+const { card } = require("./card");
+const { dialog } = require("./dialog");
 
 // 合并reducers
-export const reducers = combineReducers({
+const reducers = combineReducers({
     card,
     dialog
 });
+
+// 导出合并之后的reduces
+module.exports = {
+    reducers
+}
 ```
 
 > 注意：reducer 的 key 值其实就是state里面的key值。比如上述示例中的 card 和 dialog 对应了state 数据里的key。
@@ -669,7 +699,7 @@ export default connect(
 
 \10. 修改counter.js
 
-```js
+```react
 import React from 'react';
 
 export default class Counter extends React.Component {
