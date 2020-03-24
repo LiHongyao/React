@@ -101,7 +101,20 @@ $ npm start
 
 https://codepen.io/gaearon/pen/ZpvBNJ
 
+# 六、React VS Vue
 
+**# 相似之处**
 
+- 虚拟DOM
+- 组件化
+- Props
+- 构建工具：create-react-app / vue-cli
+- Chrome 开发工具：react-devtools / vue-devtools
+- 配套框架：react-router、react-redux / vue-router、vuex
 
+**# 主要区别**
+
+-  JSX vs 模板 
+- 状态管理 vs 对象属性
+- React-Native vs Weex
 
