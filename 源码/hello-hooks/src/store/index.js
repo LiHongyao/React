@@ -5,7 +5,6 @@ export const initialState = {
     message: '众志成城，抗疫救灾',
     count: 0
 };
-
 // => Reducer 处理函数
 export const reducer = (state = initialState, action) => {
     switch (action.type) {
