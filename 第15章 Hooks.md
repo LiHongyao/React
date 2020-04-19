@@ -19,11 +19,27 @@
 - 只能在顶层调用Hooks，不要在循环、条件或嵌套函数中调用Hook。
 - 只在 React 函数中调用 Hook，不要在普通的 JavaScript 函数中调用 Hook。
 
+**# 为什么出现Hooks**
+
+- 类组件状态逻辑复用难
+  - 缺少复用机制
+  - 渲染属性和高阶组件导致层级冗余
+- 趋向复杂难以维护
+  - 生命周期函数混杂不相干逻辑
+  - 相干逻辑分散在不同生命周期
+- this指向困扰
+  - 内联函数过度创新句柄
+  - 类成员函数不能保证this
+
+**# Hooks 优势**
+
+- 函数组件无this问题
+- 自定义Hook方便复用状态逻辑
+- 副作用的关注点分离
+
 # 二、API
 
 ## 01. [useState](https://react.docschina.org/docs/hooks-reference.html#usestate)  *
-
-在类组件当中，state 需要在构造函数中来设置：
 
 ```js
 // => define states
@@ -38,34 +54,24 @@ this.setState(state => ({}));
 在函数组件中，通过useState定义状态：
 
 ```react
-import React, { useState } from 'react'
-const Test = () => {
-    // => define states
-    const [name, setName] = useState("保密");
-    const [email, setEmail] = useState("保密");
-    const [age, setAge] = useState(0);
-    // => Events
-    const handleInput = (event) => {
-        event.persist();
-        const { id, value } = event.target;
-        switch (id) {
-            // => update states
-            case 'name': setName(value); break;
-            case 'email': setEmail(value); break;
-            case 'age': setAge(value); break;
-            default: throw new Error()
-        }
-    }
-    return (
-        <React.Fragment>
-            <input id='name' type='text' placeholder='姓名' onInput={handleInput} />
-            <input id='age' type='number' placeholder='年龄' onInput={handleInput} />
-            <input id='email' type='email' placeholder='邮箱' onInput={handleInput} />
-            <p>用户信息：{name} -  {age} - {email}</p>
-        </React.Fragment>
-    )
+import React, { useState } from 'react';
+
+const App = () => {
+  // state
+  const [count, setCount] = useState(0);
+  const [name, setName] = useState('Muzili');
+  // render
+  return (
+    <button
+      type="buton"
+      onClick={() => { setCount(count + 1) }}
+    >
+      Click {count} -- {name}
+    </button>
+  )
 }
-export default Test;
+
+export default App;
 ```
 
 > 提示：
@@ -73,6 +79,15 @@ export default Test;
 > \> 通过在函数组件里调用 useState 来给组件添加一些内部 state。React 会在重复渲染时保留这个 state。useState 会返回一对值：当前状态和一个让你更新它的函数，你可以在事件处理函数中或其他一些地方调用这个函数。它类似 class 组件的 this.setState，但是它不会把新的 state 和旧的 state 进行合并。
 >
 > \> 多次使用useState可定义多个状态。
+
+延迟初始化逻辑，优化性能：
+
+```js
+const [count, setCount] = useState(() => {
+  console.log('init count');
+  return Math.random() * 100;
+});
+```
 
 如果新的 state 需要通过使用先前的 state 计算得出，那么可以将函数传递给 `setState`。该函数将接收先前的 state，并返回一个更新后的值。
 
@@ -88,52 +103,47 @@ setState(prevState => ({
 Effect Hook 可以让你在函数组件中执行副作用操作（数据获取，设置订阅以及手动更改 React 组件中的 DOM 都属于副作用）。
 
 ```react
-import React, { useState, useEffect } from 'react'
-const Test = () => {
-    // => define states
-    const [name, setName] = useState("保密");
-    const [email, setEmail] = useState("保密");
-    const [age, setAge] = useState(0);
-    // => effect
-    /*
-    componentDidMount() {
-        // 1. 修改标题
-        // 2. 前后端交互
-        // 3. 设置订阅/处理一些其他的业务逻辑
-    }*/
-    useEffect(() => {
-        // 修改标题
-        document.title = 'Hello-Hooks';
-    });
-    useEffect(() => { // mount/update/unmount
-        console.log(name);
-    });
-    useEffect(() => { 
-        console.log(age);
-    });
+import React, { useState, useEffect } from 'react';
 
-    // => Events
-    const handleInput = (event) => {
-        event.persist();
-        const { id, value } = event.target;
-        switch (id) {
-            // => update states
-            case 'name': setName(value); break;
-            case 'email': setEmail(value); break;
-            case 'age': setAge(value); break;
-            default: throw new Error()
-        }
+const App = () => {
+  // state
+  const [count, setCount] = useState(0);
+  const [size, setSize] = useState({
+    width: document.documentElement.clientWidth,
+    height: document.documentElement.clientHeight
+  })
+  // methods
+  const onResize = () => {
+    setSize({
+      width: document.documentElement.clientWidth,
+      height: document.documentElement.clientHeight
+    })
+  }
+  // effect 
+  useEffect(() => {
+    document.title = count;
+  });
+  useEffect(() => {
+    window.addEventListener('resize', onResize, false);
+    return () => {
+      window.removeEventListener('resize', onResize, false);
     }
-    return (
-        <React.Fragment>
-            <input id='name' type='text' placeholder='姓名' onInput={handleInput} />
-            <input id='age' type='number' placeholder='年龄' onInput={handleInput} />
-            <input id='email' type='email' placeholder='邮箱' onInput={handleInput} />
-            <p>用户信息：{name} -  {age} - {email}</p>
-        </React.Fragment>
-    )
+  }, []);
+  // render
+  return (
+    <div className="app">
+      <button
+        type="button"
+        onClick={() => { setCount(count + 1) }}
+      >
+        Click {count}
+      </button>
+      <p>size: {size.width} x {size.height}</p>
+    </div>
+  )
 }
-export default Test;
+
+export default App;
 ```
 
 > 提示：
@@ -171,7 +181,7 @@ useEffect(() => {
 
 默认情况下，useEffect 在第一次渲染之后和每次更新之后都会执行。通过传递第2个参数数组跳过 Effect 进行性能优化。
 
-```react
+```js
 useEffect(() => {
   console.log(name);
 }, [name]);
@@ -373,6 +383,9 @@ export default Child;
 
 ## 05. [useRef](https://react.docschina.org/docs/hooks-reference.html#useref) *
 
+- 获取子组件或者DOM节点的句柄
+- 渲染周期之间共享数据的存储
+
 ### # useRef
 
 useRef返回一个可变的ref对象,其`.current`属性被初始化为传入的参数`(initialValue)`。返回的ref对象在整个生命周期内保持不变。
@@ -448,8 +461,38 @@ const App = () => {
 export default App;
 ```
 
-可以看到React.forwardRef 接受一个渲染函数，其接收 props 和 ref 参数并返回一个 React 节点。
-这样我们就将父组件中创建的`ref`转发进子组件，并赋值给子组件的input元素。
+可以看到React.forwardRef 接受一个渲染函数，其接收 props 和 ref 参数并返回一个 React 节点。这样我们就将父组件中创建的`ref`转发进子组件，并赋值给子组件的input元素。
+
+我们刚刚讲到，useRef可以实现渲染周期之间的共享数据的存储，我们来看如下示例：
+
+```jsx
+import React, { useState, useEffect, useRef } from 'react';
+import './App.css';
+
+const App = () => {
+  const [count, setCount] = useState(0);
+  const timerRef = useRef();
+  useEffect(() => {
+    timerRef.current = setInterval(() => {
+      setCount(count => count + 1);
+    }, 1000);
+  }, [])
+  useEffect(() => {
+    if (count === 10) {
+      clearInterval(timerRef.current);
+    }
+  })
+  return (
+    <div className="App">
+      <p>count: {count}</p>
+    </div>
+  )
+}
+
+export default App;
+```
+
+上面这个示例，我们使用useRef来记录timer，使得可以正常清除，试想一下，如果我们使用一个变量保存会怎样呢？显示不会正常清除，因为组件在每次渲染时都会重新复制timer变量。
 
 ## 06. [useImperativeHandle](https://react.docschina.org/docs/hooks-reference.html#useimperativehandle)
 
@@ -570,157 +613,28 @@ export default App;
 
 ```
 
-## 07. [useCallback](https://react.docschina.org/docs/hooks-reference.html#usecallback) 
+## 07. [useMemo](https://react.docschina.org/docs/hooks-reference.html#usememo)
 
-在介绍这个hooks的作用之前，我们先来回顾一下react中的性能优化。在hooks诞生之前，如果组件包含内部state，我们都是基于class的形式来创建组件。当时我们也知道，react中，性能的优化点在于：
+在介绍这个hooks的作用之前，我们先来回顾一下react中的性能优化：
 
-1. 调用setState，就会触发组件的重新渲染，无论前后的state是否不同
-2. 父组件更新，子组件也会自动的更新
-
-基于上面的两点，我们通常的解决方案是：使用immutable进行比较，在不相等的时候调用setState；在shouldComponentUpdate中判断前后的props和state，如果没有变化，则返回false来阻止更新。
+- shouldComponentUpdate：对比nextProps 和 props决定要不要更新
+- class 组件：pureComponent 
+- Function组件：memo
 
 在 `hooks` 出来之后，函数组件中没有 `shouldComponentUpdate` 生命周期，我们无法通过判断前后状态来决定是否更新。`useEffect` 不再区分 `mount` `update` 两个状态，这意味着函数组件的每一次调用都会执行其内部的所有逻辑，那么会带来较大的性能损耗。
 
-useCallback和后文讲到的useMemo都会在组件第一次渲染的时候执行，之后会在其依赖的变量发生改变时再次执行；并且这两个hooks都返回缓存的值，useMemo返回缓存的变量，useCallback返回缓存的函数。
+useMemo和后文讲到useCallback的都会在组件第一次渲染的时候执行，之后会在其依赖的变量发生改变时再次执行；并且这两个hooks都返回缓存的值，useMemo返回缓存的变量，useCallback返回缓存的函数。
 
-对于这两块的性能优化，记住以下结论即可，具体用法可参考后续useMemo一节。
+useMemo是在渲染期间执行的，而useEffect是在渲染之后执行。
+
+对于这两块的性能优化，记住以下结论即可：
 
 - 在子组件不需要父组件的值和函数的情况下，只需要使用 `memo` 函数包裹子组件即可。
-
 - 如果有函数传递给子组件，使用 `useCallback`
-
 - 如果有值传递给子组件，使用 `useMemo`
-
 - `useEffect`、`useMemo`、`useCallback` 都是**自带闭包**的。也就是说，每一次组件的渲染，其都会捕获当前组件函数上下文中的状态(`state`, `props`)，所以每一次这三种hooks的执行，反映的也都是**当前的状态**，你无法使用它们来捕获上一次的状态。对于这种情况，我们应该使用 `ref` 来访问。
 
-## 08. [useMemo](https://react.docschina.org/docs/hooks-reference.html#usememo)
-
-在介绍useMemo之前，我们通过一组示例来了解 `React.memo()` 是什么。
-
-父组件：
-
-```react
-import React, { useState } from 'react';
-import Button from './components/Button'
-
-const App = () => {
-    const [count, setCount] = useState(0);
-    return (
-        <div className="app">
-            <button type="button" onClick={() => { setCount(count + 1) }}>
-              点击{count}次
-        		</button>
-            <br />
-            <Button text="按钮组件" />
-        </div>
-    );
-}
-
-
-export default App;
-```
-
-子组件：
-
-```react
-import React from 'react';
-
-const Button = props => {
-    console.log('__render_button__');
-    const { text } = props;
-    return (
-        <button type="button">{text}</button>
-    )
-}
-
-export default Button;
-```
-
-熟悉react的同学可以很显然的看出，当我们点击父组件的按钮的时候，观察控制台输出，可以发现Button组件会重新渲染，这意味着一些不必要的内存消耗，接下来我们使用React.memo() 优化，只需修改子组件，如下所示：
-
-```react
-import React, { memo } from 'react';
-
-const Button = props => {
-    console.log('__render_button__');
-    const { text } = props;
-    return (
-        <button type="button">{text}</button>
-    )
-}
-
-export default memo(Button);
-```
-
-将Button组件通过memo包装之后，点击按钮再来观察控制台输出，你会发现Button组件并不会因为父组件的刷新而重新渲染。
-
-接下来我们给Button组件添加点击事件，在父组件中监听，修改父组件代码如下：
-
-```react
-import React, { useState } from 'react';
-import Button from './components/Button'
-
-const App = () => {
-  const [count, setCount] = useState(0);
-  const handleButtonClick = () => {
-    console.log('按钮组件点击事件触发!');
-  }
-  return (
-    <div className="app">
-      <button type="button" onClick={() => { setCount(count + 1) }}>点击{count}次</button>
-      <br />
-      <Button text="按钮组件" onButtonClick={handleButtonClick} />
-    </div>
-  );
-}
-
-
-export default App;
-```
-
-修改子组件代码如下：
-
-```react
-import React, { memo } from 'react';
-
-const Button = props => {
-    console.log('__render_button__');
-    const { text } = props;
-    const { onButtonClick } = props;
-    return (
-        <button type="button" onClick={onButtonClick}>{text}</button>
-    )
-}
-
-export default memo(Button);
-```
-
-当我们点击父组件的按钮修改count值时，观察控制台输出，发现Button组件每次都会随着父组件的更新而重新渲染，这是由于子组件依赖于父组件的监听函数，每次父组件被渲染时，都会重新定义该函数，name如何解决这个问题呢？我们可以使用useCallback，修改父组件代码如下：
-
-```react
-import React, { useState, useCallback } from 'react';
-import Button from './components/Button'
-
-const App = () => {
-  const [count, setCount] = useState(0);
-  const handleButtonClick = useCallback(() => {
-    console.log('按钮组件点击事件触发!');
-  }, []);
-  return (
-    <div className="app">
-      <button type="button" onClick={() => { setCount(count + 1) }}>点击{count}次</button>
-      <br />
-      <Button text="按钮组件" onButtonClick={handleButtonClick} />
-    </div>
-  );
-}
-
-export default App;
-```
-
-此时点击按钮，Button组件将不会被渲染啦。
-
-现在我们切入正题，了解useMemo的用法，还是从一组示例开始：
+接下来通过一组示例了解useMemo的使用：
 
 ```react
 import React, { useState } from 'react';
@@ -772,6 +686,127 @@ const Example = () => {
 export default Example;
 ```
 
+## 08. [useCallback](https://react.docschina.org/docs/hooks-reference.html#usecallback) 
+
+useCllback与useMemo类似，我们来看一组示例：
+
+Child.jsx
+
+```jsx
+import React, { memo } from 'react';
+
+const Child = props => {
+    console.log('__render_Child__');
+    return (
+        <div className="child"}>{props.m}</div>
+    )
+}
+
+export default memo(Child)
+```
+
+App.jsx
+
+```jsx
+import React, { useState } from 'react';
+import Child from './components/Child';
+
+const App = () => {
+  // state
+  const [m, setM] = useState(0);
+  const [n, setN] = useState(0);
+
+  // render
+  return (
+    <div className="app">
+      <button
+        type="button"
+        onClick={() => { setN(n + 1) }}
+      >
+        Click N -- {n}
+      </button>
+      <button
+        type="button"
+        onClick={() => { setM(m + 1) }}
+      >
+        Click M -- {m}
+      </button>
+      <Child m={m} />
+    </div>
+  )
+}
+
+export default App;
+
+```
+
+上面这组示例我们可以看到，Child组件通过高阶组件memo进行优化，只有m属性变化时才会触发子组件的更新，但是有这样一种情况，那就是如果我要去监听子组件事件时，那我们会通过props传递一个事件处理函数给子组件，如下所示：
+
+Child.jsx
+
+```jsx
+import React, { memo } from 'react';
+import propTypes from 'prop-types';
+
+const Child = props => {
+    console.log('__render_Child__');
+    return (
+        <div className="child" onClick={props.click}>{props.m}</div>
+    )
+}
+
+Child.propTypes = {
+    click: propTypes.func
+}
+export default memo(Child)
+```
+
+App.jsx
+
+```js
+import React, { useState } from 'react';
+import Child from './components/Child';
+
+const App = () => {
+  // state
+  const [m, setM] = useState(0);
+  const [n, setN] = useState(0);
+
+  const handleClick = () => {
+    console.log('click Child components.');
+  }
+
+  // render
+  return (
+    <div className="app">
+      <button
+        type="button"
+        onClick={() => { setN(n + 1) }}
+      >
+        Click N -- {n}
+      </button>
+      <button
+        type="button"
+        onClick={() => { setM(m + 1) }}
+      >
+        Click M -- {m}
+      </button>
+      <Child m={m} click={handleClick} />
+    </div>
+  )
+}
+
+export default App;
+```
+
+这个时候我们修改n的值，你会发现控制台依旧会打印 ”\__render_child\__“，这是由于当我们修改n的值得时候，父组件被重新渲染，事件处理函数 ”handleClick“ 会被重新赋值，所以子组件也会被重新渲染，要解决这个问题，我们就可以使用 `useCallback` 函数了，具体使用如下：
+
+```jsx
+const handleClick = useCallback(() => {
+    console.log('click Child components.');
+}, []);
+```
+
 ## 09. [useLayoutEffect](https://react.docschina.org/docs/hooks-reference.html#uselayouteffect)
 
 大部分情况下，使用 useEffect 就可以帮我们处理组件的副作用，但是如果想要同步调用一些副作用，比如对 DOM 的操作，就需要使用 useLayoutEffect，useLayoutEffect 中的副作用会在 DOM 更新之后同步执行。
@@ -787,48 +822,43 @@ export default Example;
 目前为止，在 React 中有两种流行的方式来共享组件之间的状态逻辑: [render props](https://links.jianshu.com/go?to=https%3A%2F%2Fzh-hans.reactjs.org%2Fdocs%2Frender-props.html) 和[高阶组件](https://links.jianshu.com/go?to=https%3A%2F%2Fzh-hans.reactjs.org%2Fdocs%2Fhigher-order-components.html)，现在让我们来看看 Hook 是如何在让你不增加组件的情况下解决相同问题的。
 
 ```react
-import React, { useState, useEffect} from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import './App.css';
 
-// => 自定义hook
-const useBirthStatus = (idCard) => {
-  const [birth, setBirth] = useState(null);
-  function handleStatusChange(status) {
-    setBirth(status);
-  }
+// 自定义Hooks
+const useSize = () => {
+  const [size, setSize] = useState({
+    width: document.documentElement.clientWidth,
+    height: document.documentElement.clientHeight
+  })
+  const onResize = useCallback(() => {
+    setSize({
+      width: document.documentElement.clientWidth,
+      height: document.documentElement.clientHeight
+    })
+  }, []);
   useEffect(() => {
-    let year = idCard.slice(6, 10);
-    let month = idCard.slice(10, 12);
-    let day = idCard.slice(12, 14);
-    handleStatusChange(`${year}年${month}月${day}日`);
-  });
-  return birth;
-};
-
-// => 提取Hook
-const A = () => {
-  const birth = useBirthStatus('510123199307168888');
-  return (<div className="page">
-    <h1 className="title">A</h1>
-    <p>出生年月：{birth}</p>
-  </div>)
-}
-// => 提取Hook
-const B = () => {
-  const birth = useBirthStatus('510123199305278888');
-  return (<div className="page">
-    <h1 className="title">B</h1>
-    <p>出生年月：{birth}</p>
-  </div>)
+    window.addEventListener('resize', onResize, false);
+    return () => {
+      window.removeEventListener('resize', onResize, false);
+    }
+  }, [])
+  return size;
 }
 
-function App() {
+const Child = () => {
+  const size = useSize();
+  return (<p>Child: {size.width} x {size.height}</p>)
+}
+
+const App = () => {
+  const size = useSize();
   return (
     <div className="App">
-      <A />
-      <B />
+      <Child />
+      <p>App: {size.width} x {size.height}</p>
     </div>
-  );
+  )
 }
 
 export default App;
@@ -840,7 +870,17 @@ export default App;
 
 参考地址：https://juejin.im/post/5e8bd87851882573c66cfc68#heading-6
 
+# 五、Hooks 常见问题
 
+- 生命周期函数如何映射到Hooks
+
+  http://projects.wojtekmaj.pl/react-lifecycle-methods-diagram/
+
+- 类实例成员变量如何映射到Hooks？ => useRef()
+
+- Hooks中如何获取里是props和state？=> useRef()
+
+- 如何强制更新一个Hooks组件? => 定义一个state，然后在需要更新组件的时候更新state值即可。
 
 
 

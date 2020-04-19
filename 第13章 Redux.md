@@ -4,7 +4,7 @@ mobx：https://cn.mobx.js.org/
 
 # 一、简介
 
-Redux 是 JavaScript 状态容器，提供可预测化的状态管理。
+Redux 是 JavaScript 状态容器，提供可预测化的状态管理（数据流管理）。
 
 > 提示：Redux 的集成是非必选的。
 

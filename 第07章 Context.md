@@ -2,7 +2,7 @@
 
 # 一、概述
 
-Context 提供了一个无需为每层组件手动添加 props，就能在组件树间进行数据传递的方法。
+Context 提供了一种方式，能够让数据在组件树种传递而不必一级一级手动传递。
 
 当你不想在组件树中通过逐层传递 `props` 或者 `state` 的方式来传递数据时，可以使用 `Context` 来实现**跨层级**的组件数据传递。
 
@@ -21,7 +21,7 @@ Context 提供了一个无需为每层组件手动添加 props，就能在组件
 - [Class.contextType](https://react.docschina.org/docs/context.html#classcontexttype)：订阅单个context
 - [Context.Consumer](https://react.docschina.org/docs/context.html#contextconsumer)：订阅多个context
 
-# 二、静态传递
+# 三、静态传递
 
 静态传递数据只是通过上下文将数据分发至子组件
 
@@ -69,7 +69,7 @@ class Child extends React.Component {
 export default Child;
 ```
 
-# 三、动态传递
+# 四、动态传递
 
 动态传递即将需要分发的数据绑定在state上，并且分发修改状态的方法给子组件使用。
 
