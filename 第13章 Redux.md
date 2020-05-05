@@ -388,7 +388,9 @@ React-Redux 将所有组件分成两大类：容器组件 / 展示组件。
 下面是一个展示组件的示例：
 
 ```react
-const Button = props => (<button type="button">{props.text}</button>)
+const Button = props => (
+  <button type="button">{props.text}</button>
+)
 ```
 
 因为不含有状态，展示组件又称为"纯组件"，即它跟纯函数一样，纯粹由参数决定它的值。
