@@ -815,6 +815,98 @@ const handleClick = useCallback(() => {
 >
 > 如果你正在将代码从 class 组件迁移到使用 Hook 的函数组件，则需要注意 useLayoutEffect 与 componentDidMount、componentDidUpdate 的调用阶段是一样的。但是，我们推荐你一开始先用 useEffect，只有当它出问题的时候再尝试使用 useLayoutEffect。
 
+**# useLayoutEffect + useCllback**
+
+我们知道：
+
+`React.memo` 类似于 `React.PureComponent`，能对`props`做浅比较，防止组件无效的重复渲染。
+
+`useCallback` 用于缓存 `inline` 函数，防止因属性更新时生成新的函数导致子组件重复渲染。
+
+父组件中input值发生变化时，会导致Child重新render，使用`React.memo`可以可以解决。
+
+```react
+const Child = React.memo(() => {
+    console.log("child") //只打印一次
+    return (
+        <div>
+            <button >submit</button>
+        </div>
+    )
+})
+```
+
+但是当Child组件接收父组件中的`onSubmit`函数，即使用了`React.memo`同样导致child重新渲染，
+
+```jsx
+const Child = React.memo(({ onSubmit }) => {
+    console.log("child") //input变化时就打印
+    return (
+        <div>
+            <button onClick={onSubmit}>submit</button>
+        </div>
+    )
+})
+```
+
+因为input变化后，生成了新的`onSubmit`,`React.memo`认为是不同的`onSubmiit`，所以更新了
+这时候，就要用到`useCallback`了。
+
+```jsx
+import React from "react"
+
+const Child = React.memo(({ onSubmit }) => {
+    console.log("child")
+    return (
+        <div>
+            <button onClick={onSubmit}>submit</button>
+        </div>
+    )
+})
+
+const App = () => {
+    const [text, setText] = React.useState("")
+
+    // 方案一
+    const onSubmit1 = React.useCallback(() => {
+        console.log(text)
+    }, []) //text是初始值，没有更新
+
+    // 方案二
+    const onSubmit2 = React.useCallback(() => {
+        console.log(text)
+    }) //text是新的，text变化时，生成了新的onSubmit2,表示只要有属性更新就执行
+
+    // 方案三，等同于方案二
+    const onSubmit3 = React.useCallback(() => {
+        console.log(text)
+    }, [text]) //text是新的，text变化时，生成了新的onSubmit2,表示text更新时执行
+
+    // 方案四，达到了目的
+    const ref = React.useRef()
+    React.useLayoutEffect(() => {
+        ref.current = text
+    }, [text])
+    const onSubmit4 = React.useCallback(() => {
+        console.log(ref.current)
+    }, [ref]) //ref只在创建时更新，其属性current跟随text变化，不会生成新的onSubmit4
+
+    console.log("app")
+    return (
+        <div>
+            <input value={text} onChange={e => setText(e.target.value)} />
+            {/* Child组件使用了React.memo */}
+            <Child onSubmit={onSubmit4} />
+        </div>
+    )
+}
+
+export default App
+
+```
+
+useCallback与memo搭配使用才能达到最优效果
+
 ## 10. [useDebugValue](https://react.docschina.org/docs/hooks-reference.html#usedebugvalue)
 
 # 三、自定义Hook

@@ -2,7 +2,7 @@ https://react.docschina.org/
 
 # 一、概述
 
-React 是 Facebook 在2013年推出的一个用来构建UI（用户界面）的 JavaScript 库。
+React 是 Facebook 在2013年推出的一个用来构建UI（用户界面）的 JavaScript 库，他们认为MVC无法满足他们的扩展需求。
 
 React主要用于构建UI，很多人认为 React 是 MVC 中的 V（视图）。
 
@@ -24,7 +24,7 @@ React 拥有较高的性能，代码逻辑非常简单，越来越多的人已�
 
 # 四、特点
 
-1. 声明式设计：React采用声明范式，可以轻松描述应用。
+1. 声明式设计：React采用声明范式，可以轻松描述应用（不适用模板）。
 2. 高效：React通过对DOM的模拟，最大限度地减少与DOM的交互。
 3. 灵活：React可以与已知的库或框架很好地配合。
 
