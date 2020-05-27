@@ -974,6 +974,11 @@ export default App;
 
 - 如何强制更新一个Hooks组件? => 定义一个state，然后在需要更新组件的时候更新state值即可。
 
+# 六、参考
+
+- https://overreacted.io/zh-hans/a-complete-guide-to-useeffect/
+- 
+
 
 
 
