@@ -1,6 +1,6 @@
 # 一、构建项目
 
 ```shell
-$ npx create-react-app ddou-middle-page --template typescript
+$ npx create-react-app xxx --template typescript
 ```
 
