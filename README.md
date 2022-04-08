@@ -1,4 +1,4 @@
-https://react.docschina.org/
+官网地址：<https://zh-hans.reactjs.org/>
 
 # 一、概述
 
@@ -12,109 +12,136 @@ React 拥有较高的性能，代码逻辑非常简单，越来越多的人已�
 
 # 二、优势
 
-1. 实现对虚拟DOM的操作，使得它速度快，提高了Web性能。
-2. 组件化，模块化。react里每一个模块都是一个组件，组件化开发，可维护性高。
-3. 单向数据流，比较有序，便于管理，它随着React视图库的开发而被Facebook概念化。
-4. 跨浏览器兼容：虚拟DOM帮助我们解决了跨浏览器问题，它为我们提供了标准化的API，甚至在IE8中都是没问题的。
+- 实现对虚拟DOM的操作，使得它速度快，提高了Web性能。
+
+- 组件化，模块化。react里每一个模块都是一个组件，组件化开发，可维护性高。
+
+- 单向数据流，比较有序，便于管理，它随着React视图库的开发而被Facebook概念化。
+
+- 跨浏览器兼容：虚拟DOM帮助我们解决了跨浏览器问题，它为我们提供了标准化的API，甚至在IE8中都是没问题的。
 
 # 三、不足
 
-1. react中只是MVC模式的View部分，要依赖引入很多其他模块开发。
-2. 当父组件进行重新渲染操作时，即使子组件的props或state没有做出任何改变，也会同样进行重新渲染。
+- react中只是MVC模式的View部分，要依赖引入很多其他模块开发。
+
+- 当父组件进行重新渲染操作时，即使子组件的props或state没有做出任何改变，也会同样进行重新渲染。
 
 # 四、特点
 
-1. 声明式设计：React采用声明范式，可以轻松描述应用（不适用模板）。
-2. 高效：React通过对DOM的模拟，最大限度地减少与DOM的交互。
-3. 灵活：React可以与已知的库或框架很好地配合。
+- 声明式
 
-# 五、引入
+  React 使创建交互式 UI 变得轻而易举。为你应用的每一个状态设计简洁的视图，当数据变动时 React 能高效更新并渲染合适的组件。
 
-引入三个库： react.min.js 、react-dom.min.js 和 babel.min.js：
+  以声明式编写 UI，可以让你的代码更加可靠，且方便调试。
 
-- **react.min.js** - React 的核心库
-- **react-dom.min.js** - 提供与 DOM 相关的功能
-- **babel.min.js** - Babel 可以将 ES6 代码转为 ES5 代码，这样我们就能在目前不支持 ES6 浏览器上执行 React 代码。Babel 内嵌了对 JSX 的支持。通过将 Babel 和 babel-sublime 包（package）一同使用可以让源码的语法渲染上升到一个全新的水平。
+- 组件化
+
+  构建管理自身状态的封装组件，然后对其组合以构成复杂的 UI。
+
+  由于组件逻辑使用 JavaScript 编写而非模板，因此你可以轻松地在应用中传递数据，并保持状态与 DOM 分离。
+
+- 一次学习，跨平台编写
+
+  无论你现在使用什么技术栈，在无需重写现有代码的前提下，通过引入 React 来开发新功能。
+
+  React 还可以使用 Node 进行服务器渲染，或使用 [React Native](https://reactnative.dev/) 开发原生移动应用。
+
+# 五、构建项目
 
 ## 1. 直接下载
 
-点击前往下载：https://github.com/facebook/react/releases
+[点击前往下载 >>](https://github.com/facebook/react/releases)
 
-## 2. CDN 引入
-
-```html
-<!DOCTYPE html>
-<html lang="zh-Hans">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <script src="https://unpkg.com/react@16/umd/react.development.js"></script>
-    <script src="https://unpkg.com/react-dom@16/umd/react-dom.development.js"></script>
-    <script src="https://unpkg.com/babel-standalone@6.15.0/babel.min.js"></script>
-    <title>Hello, World!</title>
-</head>
-<body>
-    <div id="app"></div>
-    <!-- 在React开发中，使用JSX，跟JavaScript不兼容，在使用JSX的地方，要设置type：text/babel -->
-    <!-- babel 是一个转换编译器，ES6转成可以再浏览器中运行的代码-->
-    <script type="text/babel">
-        // 我们的react
-    </script>
-</body>
-</html>
-```
-
-## 3. npm 
+## 2. npm 
 
 ```shell
 $ npm install react
 ```
 
-## 4. react 脚手架 *
-
-create-react-app 是来自于 Facebook，通过该命令我们无需配置就能快速构建 React 开发环境。
-
-create-react-app 自动创建的项目是基于 Webpack + ES6 。
-
-stips 01：执行以下命令创建项目：
+## 3. CRA（官方脚手架）*
 
 ```shell
-# 全局安装create-react-app
-$ npm install -g create-react-app
-# 查看版本，如果打印版本号，表示安装成功
-$ create-react-app --version
-# 创建项目
-$ create-react-app <项目名称> [--typescript]
-$ cd <项目名称>
-# 启动项目
+$ npx create-react-app project-name [--template typescript] 
+$ cd hello-react & npm install
 $ npm start
 ```
 
-> 提示：“Windows” 如果提示不是内部命令，去添加环境变量即可。
+> Tips：
+>
+> - `project-name`：项目名称
+>
+> - `--template typescript `：安装TS版本项目模板；
 
-## 5. next
+## 4. Vite
 
-参考：https://nextjs.org/
+```shell
+$ npm create vite@latest project-name -- --template react
+```
 
-## 6. CodePen
+> Tips：参考 <https://cn.vitejs.dev/guide/#scaffolding-your-first-vite-project>
 
-https://codepen.io/gaearon/pen/ZpvBNJ
+# 六、目录结构
 
-# 六、React VS Vue
+```ini
+hello-react
+.
+├── node_modules
+├── public
+├── src
+│   ├── app.js           # 根组件
+│   ├── index.css        # 全局样式
+│	└── index.js         # 入口文件
+├── .gitignore           # git 忽略文件
+├── package-lock.json
+├── package.json
+└── README.md
+```
 
-**# 相似之处**
+> Tips：脚手架构建项目之后，删除冗余文件，保留如上目录结构。
 
-- 虚拟DOM
-- 组件化
-- Props
-- 构建工具：create-react-app / vue-cli
-- Chrome 开发工具：react-devtools / vue-devtools
-- 配套框架：react-router、react-redux / vue-router、vuex
+# 七、初体验
 
-**# 主要区别**
+修改代码文件
 
--  JSX vs 模板 
-- 状态管理 vs 对象属性
-- React-Native vs Weex
+> src/index.js
+
+```tsx
+// -- 引入核心依赖
+import { StrictMode } from 'react';
+import { createRoot } from 'react-dom/client';
+
+// -- 引入全局样式
+import './index.css';
+
+// -- 引入根组件
+import App from './App';
+
+// -- 渲染根视图
+const rootElement = document.getElementById('root');
+const root = createRoot(rootElement);
+
+root.render(
+  <StrictMode>
+    <App />
+  </StrictMode>
+);
+```
+
+> src/app.js
+
+```tsx
+// -- 函数组件
+const App = () => {
+  return (
+    <div className='App'>
+      <p>Hello, React.js!</p>
+    </div>
+  );
+};
+
+// -- 导出组件
+export default App;
+```
+
+> Tips：此时页面显示 → `Hello, React.js！`
 

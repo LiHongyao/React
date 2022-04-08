@@ -1,8 +1,10 @@
-<https://react.docschina.org/>
-
 # 一、概述
 
-JSX 不是一门编程语言，是一种 JavaScript 的语法扩展（语法糖）。
+```jsx
+const element = <h1>Hello, world!</h1>;
+```
+
+JSX 不是一门编程语言，是一种 `JavaScript`  的语法扩展（语法糖）。
 
 - JSX 标签就是 HTML 标签，只不过在js中书写这些标签的时候无需使用双引号括起来。
 - JSX 语法能够让我们更直观的看到组件的DOM结构，不能在浏览器上直接运行，最终会转换成js代码在浏览器中运行。
@@ -11,36 +13,40 @@ JSX 不是一门编程语言，是一种 JavaScript 的语法扩展（语法糖�
 
 React 认为渲染逻辑本质上与其他 UI 逻辑内在耦合，比如，在 UI 中需要绑定处理事件、在某些时刻状态发生变化时需要通知到 UI，以及需要在 UI 中展示准备好的数据。
 
-React 并没有采用将标记与逻辑进行分离到不同文件这种人为地分离方式，而是通过将二者共同存放在称之为“组件”的松散耦合单元之中，来实现[*关注点分离*](https://en.wikipedia.org/wiki/Separation_of_concerns)。
+React 并没有采用将标记与逻辑进行分离到不同文件这种人为地分离方式，而是通过将二者共同存放在称之为“组件”的松散耦合单元之中，来实现关注点分离。
 
-React [不强制要求](https://react.docschina.org/docs/react-without-jsx.html) 使用 JSX，但是大多数人发现，在 JavaScript 代码中将 JSX 和 UI 放在一起时，会在视觉上有辅助作用。它还可以使 React 显示更多有用的错误和警告消息。
+React 不强制要求使用 JSX，但是大多数人发现，在 JavaScript 代码中将 JSX 和 UI 放在一起时，会在视觉上有辅助作用。它还可以使 React 显示更多有用的错误和警告消息。
 
 # 三、JSX 表达式
 
 你可以任意地在 JSX 当中使用 JavaScript 表达式，在 JSX 当中的表达式要包含在大括号`{}`里：
 
 ```react
-// 文件位置：index.js
-import React from 'react'
-import ReactDOM from 'react-dom'
+const App = () => {
+  // -- constants
+  const name = 'Li-HONGYAO';
+  const isLogin = true;
 
-let name = '木子李', isLogin = true;
-ReactDOM.render(
-    <div class="box">
-        {name} - { isLogin ? "已登录" : "未登录" }
-    </div>,
-    document.getElementById('root')   
-);
+  // -- render
+  return (
+    <div className='App'>
+      <p>Hello, React.js!</p>
+      {/* JSX-表达式 */}
+      {name} - {isLogin ? '已登录' : '未登录'}
+    </div>
+  );
+};
 ```
 
-> 提示：react 组件内部只能有一个根标签。
+JSX 本身也是一个表达式，在编译之后，JSX 表达式会被转为普通 `JavaScript` 函数调用，并且对其取值后得到 `JavaScript` 对象。也就是说，你可以在 `if` 语句和 `for` 循环的代码块中使用 JSX，将 JSX 赋值给变量，把 JSX 当作参数传入，以及从函数中返回 JSX：
 
-JSX 本身也是一个表达式，在编译之后，JSX 表达式会被转为普通 JavaScript 函数调用，并且对其取值后得到 JavaScript 对象。也就是说，你可以在 `if` 语句和 `for` 循环的代码块中使用 JSX，将 JSX 赋值给变量，把 JSX 当作参数传入，以及从函数中返回 JSX：
-
-```react
-function getElement(name) {
-  return name ? <p>Hello, {name}!</p> : <p>Hello</p>;
-}
+```jsx
+const renderTips = (name) => {
+    if (name) {
+        return <p>Hello, {name}！</p>;
+    }
+    return <p>Hello, Girls！</p>;
+};
 ```
 
 # 四、JSX 属性
@@ -48,32 +54,36 @@ function getElement(name) {
 你可以使用引号来定义以字符串为值的属性：
 
 ```jsx
-let element = <div className="box"></div>
+const element = <div className="box"></div>
 ```
 
-也可以使用大括号来定义以 JavaScript 表达式为值的属性：
+也可以使用大括号来定义以 `JavaScript` 表达式为值的属性：
 
 ```jsx
-let element = <img src={imgUrl} />
+const element = <img src={imgUrl} />
 ```
 
-切记你使用了大括号包裹的 JavaScript 表达式时就不要再到外面套引号了。JSX 会将引号当中的内容识别为字符串而不是表达式。
+切记你使用了大括号包裹的 `JavaScript` 表达式时就不要再到外面套引号了。JSX 会将引号当中的内容识别为字符串而不是表达式。
 
-> 注意：因为 JSX 的特性更接近 JavaScript 而不是 HTML , 所以 React DOM 使用 `camelCase` 小驼峰命名 来定义属性的名称，而不是使用 HTML 的属性名称。
+> 注意：因为 JSX 的特性更接近 `JavaScript` 而不是 HTML , 所以 React DOM 使用 `camelCase` 小驼峰命名 来定义属性的名称，而不是使用 HTML 的属性名称。
 
 # 五、JSX 嵌套
 
+JSX 标签里能够包含很多子元素
+
 ```react
-let element = (
-    <div>
-        <p className="name">姓名：木子李</p>
-        <p className="tel">电话：17398888669</p>
-    </div>
+const element = (
+  <div>
+    <p className='name'>Name：Li-HONGYAO</p>
+    <p className='tel'>Phone：17398888669</p>
+  </div>
 );
-ReactDOM.render(
-    element,
-    document.getElementById('root')
-)
+```
+
+假如一个标签里面没有内容，你可以使用 `/>` 来闭合标签，就像 XML 语法一样：
+
+```jsx
+const element = <img src={user.avatarUrl} />;
 ```
 
 # 六、JSX 防注入攻击
