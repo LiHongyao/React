@@ -2,7 +2,7 @@
  * @Author: Lee
  * @Date: 2022-04-11 16:11:01
  * @LastEditors: Lee
- * @LastEditTime: 2022-04-11 17:08:26
+ * @LastEditTime: 2022-04-18 15:51:43
  */
 import { Component } from 'react';
 import PropTypes from 'prop-types';
@@ -15,14 +15,14 @@ class Child extends Component {
         {this.props.name} - {this.props.age} - {this.props.job}
         <br />
         <br />
-<button
-  type='button'
-  onClick={() => {
-    this.props.tap('天道酬勤');
-  }}
->
-  发送消息给父组件
-</button>
+        <button
+          type='button'
+          onClick={() => {
+            this.props.tap('天道酬勤');
+          }}
+        >
+          发送消息给父组件
+        </button>
       </div>
     );
   }

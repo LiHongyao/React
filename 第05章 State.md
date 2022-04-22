@@ -1,99 +1,104 @@
-https://doc.react-china.org/docs/state-and-lifecycle.html
-
 # 一、概述
 
-我们知道，通过 props 可以实现数据的传递，但是有一个问题，那就是如果我们需要动态更新数据，就不能通过 props 了，因为 react 中的 props 显示在页面上后，并不能动态响应，此时，我们就需要通过状态（State）来实现了，状态与属性十分相似，**但是状态是私有的，完全受控于当前组件**。我们来看一组关于定时器更新当前时间的示例。
+我们知道，通过 `props` 可以实现数据的传递，但是有一个问题，那就是如果我们需要动态更新数据，就不能通过 `props` 了，因为 react 中的 `props` 显示在页面上后，并不能动态响应，此时，我们就需要通过状态（`State`）来实现，状态与属性十分相似，**但是状态是私有的，完全受控于当前组件**。我们来看一组关于定时器更新当前时间的示例。
 
 # 二、示例
 
-**\> 定义 LocaleTime 组件**
+> Tips：这里，我们通过 `class` 组件实现该需求。
+
+1）定义组件
 
 ```react
-import React from "react";
-class LocaleTime extends React.Component {
-    // => constructor
-    constructor(props) {
-        super(props);
-        // init states
-        this.state = {
-            date: new Date()
-        }
-    }
-    // => life circle
-    componentDidMount() {
-        // 启动定时器，每秒更新一次date状态
-        this.timer = setInterval(() => {
-            // 更新state
-            this.setState({
-                date: new Date()
-            })
-        }, 1000);
-    }
-    componentWillUnmount() {
-        clearInterval(this.timer);
-    }
-    // => render
-    render() {
-        return (<h1>北京时间：{this.state.date.toLocaleTimeString()}</h1>);
-    }
+import { Component } from 'react';
+
+class LocaleTime extends Component {
+  // -- 构造函数
+  constructor(props) {
+    super(props);
+    // init state
+    this.state = {
+      date: new Date(),
+    };
+  }
+  // -- 生命周期
+  componentDidMount() {
+    // init timer & update state
+    this.timer = setInterval(() => {
+      this.setState({
+        date: new Date(),
+      });
+    }, 1000);
+  }
+  componentWillUnmount() {
+    // clear timer
+    clearInterval(this.timer);
+  }
+  render() {
+    return <h1>北京时间：{this.state.date.toLocaleTimeString()}</h1>;
+  }
 }
+
 export default LocaleTime;
 ```
 
-**\> 使用 LocaleTime 组件**
+2）导入引用
 
-```react
-import React from 'react';
-import ReactDOM from 'react-dom';
-import LocaleTime from './locale-time';
+```jsx
+import LocaleTime from './components/LocaleTime';
+const App = () => {
+  return (
+    <div className='App'>
+      <LocaleTime />
+    </div>
+  );
+};
 
-ReactDOM.render(
-    <LocaleTime />,
-    document.getElementById('root')
-);
+export default App;
 ```
 
-**\> 效果演示**
+
+
+3）效果演示
 
 ![](IMGS/state.gif)
 
-**\> 分析**
+4）分析结果
 
 现在时钟每秒钟都会执行。让我们快速回顾一下发生了什么以及调用方法的顺序：
 
-1. 当 `<LocaleTime />` 被传递给 `ReactDOM.render()` 时，React 调用 `LocaleTime` 组件的构造函数。 由于 `LocaleTime` 需要显示当前时间，所以使用包含当前时间的对象来初始化 `this.state` 。 我们稍后会更新此状态。
-2. React 然后调用 `LocaleTime` 组件的 `render()` 方法。这是 React 了解屏幕上应该显示什么内容，然后 React 更新 DOM 以匹配 `LocaleTime` 的渲染输出。
-3. 当 `LocaleTime` 的输出插入到 DOM 中时，React 调用 `componentDidMount()` 生命周期钩子。 在其中，`LocaleTime` 组件要求浏览器设置一个定时器，每秒钟调用一次更新一次当前时间。
-4. 浏览器每秒钟更新一次当前时间。 在其中，`LocaleTime` 组件通过使用包含当前时间的对象调用 `setState()` 来调度UI更新。 通过调用 `setState()` ，React 知道状态已经改变，并再次调用 `render()` 方法来确定屏幕上应当显示什么。 这一次，`render()` 方法中的 `this.state.date` 将不同，所以渲染输出将包含更新的时间，并相应地更新DOM。
+1. 当 `<LocaleTime />` 被引用时，React 会调用 `LocaleTime ` 组件的构造函数。因为 `LocaleTime ` 需要显示当前的时间，所以它会用一个包含当前时间的对象来初始化 `this.state`。我们会在之后更新 state。
+2. 之后 React 会调用组件的 `render()` 方法。这就是 React 确定该在页面上展示什么的方式。然后 React 更新 DOM 来匹配 `LocaleTime ` 渲染的输出。
+3. 当 `LocaleTime ` 的输出被插入到 DOM 中后，React 就会调用 `ComponentDidMount()` 生命周期方法。在这个方法中，`LocaleTime ` 组件向浏览器请求设置一个计时器来每秒更新一次当前组件的状态 `this.setState`。
+4. 通过调用 `setState()` ，React 知道状态已经改变，并再次调用 `render()` 方法来确定屏幕上应当显示什么。 这一次，`render()` 方法中的 `this.state.date` 将不同，所以渲染输出将包含更新的时间，并相应地更新DOM。
 5. 一旦`LocaleTime`组件被从DOM中移除，React会调用`componentWillUnmount()`这个钩子函数，定时器也就会被清除。
 
-# 三、注意
+# 三、注意 *
 
-## 1、不要直接更新状态
+## 1. 不要直接更新状态
 
 例如，此代码不会重新渲染组件：
 
 ```js
 // Wrong
-this.state.message = 'Hello';
+this.state.comment = 'Hello';
 ```
 
 应当使用 `setState()`：
 
 ```js
 // Correct
-this.setState({message: 'Hello'});
+this.setState({comment: 'Hello'});
 ```
 
-> 提示：构造函数是唯一能够初始化 `this.state` 的地方。
+> 提示：构造函数是唯一可以给 `this.state` 赋值的地方。
 
-## 2、状态更新可能是异步的
+## 2. 状态更新可能是异步的
 
-React 可以将多个`setState()` 调用合并成一个调用来提高性能。
+出于性能考虑，React 可能会把多个 `setState()` 调用合并成一个调用。
 
-因为 `this.props` 和 `this.state` 可能是异步更新的，你不应该依靠它们的值来计算下一个状态。
+因为 `this.props` 和 `this.state` 可能会异步更新，所以你不要依赖他们的值来更新下一个状态。
 
-例如，此代码可能无法更新计数器：
+例如，此代码可能会无法更新计数器：
 
 ```js
 // Wrong
@@ -102,99 +107,93 @@ this.setState({
 });
 ```
 
-要修复它，请使用第二种形式的 `setState()` 来接受一个函数而不是一个对象。 该函数将接收先前的状态作为第一个参数，将此次更新被应用时的props做为第二个参数：
+要解决这个问题，可以让 `setState()` 接收一个函数而不是一个对象。这个函数用上一个 state 作为第一个参数，将此次更新被应用时的 props 做为第二个参数：
 
 ```js
 // Correct
-this.setState((prevState, props) => ({
-  counter: prevState.counter + props.increment
+this.setState((state, props) => ({
+  counter: state.counter + props.increment
 }));
 ```
 
-## 3、状态合并更新
+## 3. State 的更新会被合并
 
-当你调用 `setState()` 时，React 将你提供的对象合并到当前状态。
+当你调用 `setState()` 的时候，React 会把你提供的对象合并到当前的 state。
 
-例如，你的状态可能包含一些独立的变量：
+例如，你的 state 包含几个独立的变量：
 
 ```js
 constructor(props) {
-    super(props);
-    this.state = {
-        posts: [],
-        comments: []
-    };
+  super(props);
+  this.state = {
+    posts: [],
+    comments: []
+  };
 }
 ```
 
-你可以调用 `setState()` 独立地更新它们：
+然后你可以分别调用 `setState()` 来单独地更新它们：
 
 ```js
 componentDidMount() {
-    fetchPosts().then(response => {
-        this.setState({
-            posts: response.posts
-        });
+  fetchPosts().then(response => {
+    this.setState({
+      posts: response.posts
     });
+  });
 
-    fetchComments().then(response => {
-        this.setState({
-            comments: response.comments
-        });
+  fetchComments().then(response => {
+    this.setState({
+      comments: response.comments
     });
+  });
 }
 ```
 
-这里的合并是浅合并，也就是说 `this.setState({comments})` 完整保留了`this.state.posts`，但完全替换了`this.state.comments`。
+这里的合并是浅合并，所以 `this.setState({comments})` 完整保留了 `this.state.posts`， 但是完全替换了 `this.state.comments`。
 
 # 四、数据自顶向下流动
 
-父组件或子组件都不能知道某个组件是有状态还是无状态，并且它们不应该关心某组件是被定义为一个函数还是一个类。这就是为什么状态通常被称为局部或封装。 除了拥有并设置它的组件外，其它组件不可访问。
+不管是父组件或是子组件都无法知道某个组件是有状态的还是无状态的，并且它们也并不关心它是函数组件还是 `class` 组件。
 
-组件可以选择将其状态作为属性传递给其子组件：
+这就是为什么称 `state` 为局部的或是封装的的原因。除了拥有并设置了它的组件，其他组件都无法访问。
+
+组件可以选择把它的 `state` 作为 `props` 向下传递到它的子组件中：
 
 ```html
-<h1>It is {this.state.date.toLocaleTimeString()}.</h1>
-```
-
-这也适用于用户定义的组件：
-
-```react
 <FormattedDate date={this.state.date} />
 ```
 
-`FormattedDate` 组件将在其属性中接收到 `date` 值，并且不知道它是来自 `LocaleTime` 状态、还是来自 `LocaleTime` 的属性、亦或手工输入：
+`FormattedDate` 组件会在其 `props` 中接收参数 `date`，但是组件本身无法知道它是来自于 `LocaleTime ` 的 `state`，或是 `LocaleTime ` 的 `props`，还是手动输入的：
 
 ```react
 function FormattedDate(props) {
-    return <h2>It is {props.date.toLocaleTimeString()}.</h2>;
+  return <h2>It is {props.date.toLocaleTimeString()}.</h2>;
 }
 ```
 
-这通常被称为`自顶向下`或`单向`数据流。 任何状态始终由某些特定组件所有，并且从该状态导出的任何数据或 UI 只能影响树中`下方`的组件。
+这通常会被叫做 “**自上而下**” 或是 “**单向**” 的数据流。任何的 `state` 总是所属于特定的组件，而且从该 state 派生的任何数据或 UI 只能影响树中“低于”它们的组件。
 
-如果你想象一个组件树作为属性的瀑布，每个组件的状态就像一个额外的水源，它连接在一个任意点，但也流下来。
+如果你把一个以组件构成的树想象成一个 `props` 的数据瀑布的话，那么每一个组件的 `state` 就像是在任意一点上给瀑布增加额外的水源，但是它只能向下流动。
 
-为了表明所有组件都是真正隔离的，我们可以创建一个 `App` 组件，它渲染三个`LocaleTime`：
+为了证明每个组件都是真正独立的，我们可以创建一个渲染三个 `LocaleTime` 的 `App` 组件：
 
 ```html
-function App() {
+import LocaleTime from './components/LocaleTime';
+const App = () => {
   return (
-    <div>
+    <div className='App'>
       <LocaleTime />
       <LocaleTime />
       <LocaleTime />
     </div>
   );
-}
+};
 
-ReactDOM.render(
-  <App />,
-  document.getElementById('root')
-);
+export default App;
 ```
 
-每个 `LocaleTime` 建立自己的定时器并且独立更新。
+每个 `LocaleTime` 组件都会单独设置它自己的计时器并且更新它。
 
-在 React 应用程序中，组件是有状态还是无状态被认为是可能随时间而变化的组件的实现细节。 可以在有状态组件中使用无状态组件，反之亦然。
+在 React 应用中，组件是有状态组件还是无状态组件属于组件实现的细节，它可能会随着时间的推移而改变。你可以在有状态的组件中使用无状态的组件，反之亦然。
 
