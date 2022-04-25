@@ -2,28 +2,25 @@
  * @Author: Lee
  * @Date: 2022-04-24 17:10:13
  * @LastEditors: Lee
- * @LastEditTime: 2022-04-24 18:08:22
+ * @LastEditTime: 2022-04-25 14:09:49
  */
-import { useEffect } from 'react';
-import { Routes, Route, NavLink, useNavigate } from 'react-router-dom';
-
-import Home from './pages/Home';
-import About from './pages/About';
-
-const App = () => {
-
-
+import Basic from './components/Basic';
+import UseRoutes from './components/UseRoutes';
+import Nested from './components/Nested';
+import SearchParams from './components/SearchParams';
+export default function App() {
   return (
     <div>
-      <header>
-        <h1>Welcome to React Router!</h1>
-      </header>
+      {/* 基础示例 */}
+      {/* <Basic /> */}
 
-      <Routes>
-        <Route path='/' element={<Home />} />
-        <Route path='/about' element={<About />} />
-      </Routes>
+      {/* 配置文件 */}
+      {/* <UseRoutes /> */}
+
+      {/* 路由嵌套 */}
+      {/* <Nested /> */}
+
+      <SearchParams />
     </div>
   );
-};
-export default App;
+}

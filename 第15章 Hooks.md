@@ -1,176 +1,177 @@
-[React Hooks 参考 >>](https://react.docschina.org/docs/hooks-intro.html)
-
 # 一、概述
 
-\1. Hook 是 React 16.8 的新增特性。
+[React Hooks >>](https://zh-hans.reactjs.org/docs/hooks-intro.html) 是 React 16.8 的新增特性。它可以让你在不编写 `class` 的情况下使用 `state` 以及其他的 React 特性。
 
-\2. Hook 是一些可以让你在函数组件里“钩入” React state 及生命周期等特性的函数。
+```jsx
+import { useState } from 'react';
 
-\3. Hook 不能在 class 组件中使用。
+export default function App() {
+  // -- state
+  const [count, setCount] = useState(0);
+  // -- render
+  return (
+    <div>
+      <p>You Click the Button {count} times.</p>
+      <button type='button' onClick={() => setCount(count + 1)}>
+        Tap me.
+      </button>
+    </div>
+  );
+}
+```
 
-\4. Hook 遵循函数式编程的理念，主旨是在函数组件中引入类组件中的状态和生命周期，并且这些状态和生命周期函数也可以被抽离，实现复用的同时，减少函数组件的复杂性和易用性。
+`useState` 是我们要学习的第一个 “Hook”，这个例子是简单演示。如果不理解也不用担心。
 
-**# 何时使用**？
+## 动机
 
-如果你在编写函数组件并意识到需要向其添加一些 state，以前的做法是必须将其它转化为 class。现在你可以在现有的函数组件中使用 Hook。
+1）类组件状态逻辑复用难
 
-**# 规则**
+- 缺少复用机制
+- 渲染属性和高阶组件导致层级冗余
 
-- 只能在顶层调用Hooks，不要在循环、条件或嵌套函数中调用Hook。
-- 只在 React 函数中调用 Hook，不要在普通的 JavaScript 函数中调用 Hook。
+2）趋向复杂难以维护
 
-**# 为什么出现Hooks**
+- 生命周期函数混杂不相干逻辑
+- 相干逻辑分散在不同生命周期
 
-- 类组件状态逻辑复用难
-  - 缺少复用机制
-  - 渲染属性和高阶组件导致层级冗余
-- 趋向复杂难以维护
-  - 生命周期函数混杂不相干逻辑
-  - 相干逻辑分散在不同生命周期
-- this指向困扰
-  - 内联函数过度创新句柄
-  - 类成员函数不能保证this
+3）`this` 指向困扰
 
-**# Hooks 优势**
+- 内联函数过度创新句柄
+- 类成员函数不能保证this
 
-- 函数组件无this问题
-- 自定义Hook方便复用状态逻辑
-- 副作用的关注点分离
+## 优势
+
+- 函数组件无 `this` 问题；
+- 自定义Hook方便复用状态逻辑；
+- 副作用的关注点分离；
+
+## 渐进策略
+
+**官方没有计划从 React 中移除 class**，所以，Hook 的使用完全是可选的。Hook 和现有代码可以同时工作，你可以渐进式地使用他们
+
+## 使用规则
+
+Hook 就是 JavaScript 函数，但是使用它们会有两个额外的规则：
+
+- 只能在**函数最外层**调用 Hook。不要在循环、条件判断或者子函数中调用。
+- 只能在 **React 的函数组件**中调用 Hook。不要在其他 JavaScript 函数中调用。（还有一个地方可以调用 Hook —— 就是自定义的 Hook 中，我们稍后会学习到。）
 
 # 二、API
 
-## 01. [useState](https://react.docschina.org/docs/hooks-reference.html#usestate)  *
+## [useState](https://zh-hans.reactjs.org/docs/hooks-reference.html#usestate)  
 
-```js
-// => define states
-constructor() {
-	super();
-	this.state = {}
-}
-// => update states
-this.setState(state => ({}));
+语法形式：
+
+```jsx
+const [state, setState] = useState(initialState);
 ```
 
-在函数组件中，通过useState定义状态：
+- `state`：当前状态；
+- `setState`：更新状态的函数，接收新值，替换旧值，加入渲染队列，统一重新渲染；
+- `initialState`：初始值，只会在初始渲染时使用，可以是基本数据类型也可以是对象；
 
-```react
-import React, { useState } from 'react';
+代码示例：
 
-const App = () => {
-  // state
+```jsx
+import { useState } from 'react';
+
+export default function App() {
+  // -- state
   const [count, setCount] = useState(0);
-  const [name, setName] = useState('Muzili');
-  // render
+  // -- render
   return (
-    <button
-      type="buton"
-      onClick={() => { setCount(count + 1) }}
-    >
-      Click {count} -- {name}
-    </button>
-  )
+    <div>
+      <p>You Click the Button {count} times.</p>
+      <button type='button' onClick={() => setCount(count + 1)}>
+        Tap me.
+      </button>
+    </div>
+  );
 }
-
-export default App;
 ```
 
-> 提示：
->
-> \> 通过在函数组件里调用 useState 来给组件添加一些内部 state。React 会在重复渲染时保留这个 state。useState 会返回一对值：当前状态和一个让你更新它的函数，你可以在事件处理函数中或其他一些地方调用这个函数。它类似 class 组件的 this.setState，但是它不会把新的 state 和旧的 state 进行合并。
->
-> \> 多次使用useState可定义多个状态。
-
-延迟初始化逻辑，优化性能：
-
-```js
-const [count, setCount] = useState(() => {
-  console.log('init count');
-  return Math.random() * 100;
-});
-```
+**1）函数式更新**
 
 如果新的 state 需要通过使用先前的 state 计算得出，那么可以将函数传递给 `setState`。该函数将接收先前的 state，并返回一个更新后的值。
 
+```jsx
+<button onClick={() => setCount(prevCount => prevCount + 1)}>+</button>
+```
+
+如果你的更新函数返回值与当前 state 完全相同，则随后的重渲染会被完全跳过。
+
+> 注意：
+>
+> 与 class 组件中的 `setState` 方法不同，`useState` 不会自动合并更新对象。你可以用函数式的 `setState` 结合展开运算符来达到合并更新对象的效果。
+>
+> ```jsx
+> const [state, setState] = useState({});
+> setState(prevState => {
+>   // 也可以使用 Object.assign
+>   return {...prevState, ...updatedValues};
+> });
+> ```
+
+**2）惰性初始化**
+
+`initialState` 参数只会在组件的初始渲染中起作用，后续渲染时会被忽略。如果初始 state 需要通过复杂计算获得，则可以传入一个函数，在函数中计算并返回初始的 state，此函数只在初始渲染时被调用：
+
 ```js
-setState(prevState => ({
-	...prevState,
-	...updatedValues
-}))
+const [state, setState] = useState(() => {
+  const initialState = someExpensiveComputation(props);
+  return initialState;
+});
 ```
 
-## 02. [useEffect](https://react.docschina.org/docs/hooks-reference.html#useeffect) *
+## [useEffect](https://zh-hans.reactjs.org/docs/hooks-reference.html#useeffect) 
 
-Effect Hook 可以让你在函数组件中执行副作用操作（数据获取，设置订阅以及手动更改 React 组件中的 DOM 都属于副作用）。
+Effect Hook 可以让你在函数组件中执行副作用（数据获取，订阅或者手动修改DOM）操作。`useEffect` 就是一个 Effect Hook，它跟 class 组件中的 `componentDidMount`、`componentDidUpdate` 和 `componentWillUnmount` 具有相同的用途，只不过被合并成了一个 API。
 
-```react
-import React, { useState, useEffect } from 'react';
+例如，下面这个组件在 React 更新 DOM 后会设置一个页面标题：
 
-const App = () => {
-  // state
+```jsx
+import { useState, useEffect } from 'react';
+
+export default function App() {
+  // -- state
   const [count, setCount] = useState(0);
-  const [size, setSize] = useState({
-    width: document.documentElement.clientWidth,
-    height: document.documentElement.clientHeight
-  })
-  // methods
-  const onResize = () => {
-    setSize({
-      width: document.documentElement.clientWidth,
-      height: document.documentElement.clientHeight
-    })
-  }
-  // effect 
+  // -- effects
+  // -- 相当于 componentDidMount 和 componentDidUpdate:
   useEffect(() => {
-    document.title = count;
+    document.title = `You clicked ${count} times`;
   });
-  useEffect(() => {
-    window.addEventListener('resize', onResize, false);
-    return () => {
-      window.removeEventListener('resize', onResize, false);
-    }
-  }, []);
-  // render
+  // -- render
   return (
-    <div className="app">
-      <button
-        type="button"
-        onClick={() => { setCount(count + 1) }}
-      >
-        Click {count}
-      </button>
-      <p>size: {size.width} x {size.height}</p>
+    <div>
+      <p>You Click the Button {count} times.</p>
+      <button type='button' onClick={() => setCount(prevCount => prevCount + 1)}>Tap me.</button>
     </div>
-  )
+  );
 }
-
-export default App;
 ```
 
-> 提示：
->
-> 1、如果熟悉 React class的生命周期，你可以把 `useEffect` Hook 看做以下三个生命周期函数的组合：
->
-> - componentDidMount
-> - componentDidUpdate
-> - componentWillUnmount
->
->2、使用 `useEffect` 调度的 effect 不会阻塞浏览器更新屏幕，这让你的应用看起来响应更快。大多数情况下，effect 不需要同步地执行。
+当你调用 `useEffect` 时，就是在告诉 React 在完成对 DOM 的更改后运行你的“副作用”函数。
 
-有些副作用可能需要清除，所以需要返回一个函数，该函数在组件即将卸载之前调用：
+由于副作用函数是在组件内声明的，所以它们可以访问到组件的 props 和 state。默认情况下，React 会在每次渲染后调用副作用函数 —— **包括**第一次渲染的时候。
+
+**1）清除 effect**
+
+副作用函数还可以通过返回一个函数来指定如何“清除”副作用，如：
 
 ```react
 useEffect(() => {
-  // => 业务逻辑
+  // -- 副作用操作（订阅、定时器...)
   return () => {
-    // => 移除监听器/清除保存的数据/...
-  }
+    // -- 清除副作用（移除订阅、定时器等操作...）
+  };
 });
 ```
+
+**2）关注点分离**
 
 React 允许使用多个 Effect 实现关注点分离。
 
 ```react
-// Effect
 useEffect(() => {
   document.title = "Hello Hooks";
 });
@@ -179,26 +180,30 @@ useEffect(() => {
 });
 ```
 
-默认情况下，useEffect 在第一次渲染之后和每次更新之后都会执行。通过传递第2个参数数组跳过 Effect 进行性能优化。
+**3）条件之星**
 
-```js
+默认情况下，effect 会在每轮组件渲染完成后执行。这样的话，一旦 effect 的依赖发生变化，它就会被重新创建。
+
+通过传递第2个参数（它是 effect 所依赖的值数组），可让其只在指定属性变化时重新创建。
+
+```jsx
 useEffect(() => {
   console.log(name);
 }, [name]);
 ```
 
-上述代码，会在name变量变化时才会触发effect。
+上述代码，会在 `name` 属性变化时才会触发 `effect`。
 
-如果想执行只运行一次的 effect（仅在组件挂载和卸载时执行），可以传递一个空数组（`[]`）作为第二个参数。
+如果想执行  **只运行一次** 的 effect（仅在组件挂载和卸载时执行），可以传递一个空数组（`[]`）作为第二个参数。
 
-```react
+```jsx
 useEffect(() => {
   $.ajax(); 
   document.title = 'Hello-Hooks';
 }, []);
 ```
 
-## 03. [useContext](https://react.docschina.org/docs/hooks-reference.html#usecontext) * 
+## [useContext](https://zh-hans.reactjs.org/docs/hooks-reference.html#usecontext) 
 
 useContext(MyContext) 相当于 class 组件中的 static contextType = MyContext 或者 <MyContext.Consumer>。
 
@@ -960,24 +965,7 @@ export default App;
 
 # 四、React Hooks 数据流
 
-参考地址：https://juejin.im/post/5e8bd87851882573c66cfc68#heading-6
-
-# 五、Hooks 常见问题
-
-- 生命周期函数如何映射到Hooks
-
-  http://projects.wojtekmaj.pl/react-lifecycle-methods-diagram/
-
-- 类实例成员变量如何映射到Hooks？ => useRef()
-
-- Hooks中如何获取里是props和state？=> useRef()
-
-- 如何强制更新一个Hooks组件? => 定义一个state，然后在需要更新组件的时候更新state值即可。
-
-# 六、参考
-
-- https://overreacted.io/zh-hans/a-complete-guide-to-useeffect/
-- 
+[参考这里 >>](https://juejin.im/post/5e8bd87851882573c66cfc68#heading-6)
 
 
 
