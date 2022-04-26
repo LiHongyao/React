@@ -1,7 +1,0 @@
-export const TODOS_ADD = 'TODOS_ADD';
-export const TODOS_REMOVE = 'TODOS_REMOVE';
-export const TODOS_TOGGLE = 'TODOS_TOGGLE';
-
-export const COUNTER_INCREMENT = 'COUNTER_INCREMENT';
-export const COUNTER_DECREMENT = 'COUNTER_DECREMENT';
-
