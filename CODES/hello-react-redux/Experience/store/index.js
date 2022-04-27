@@ -2,12 +2,12 @@
  * @Author: Lee
  * @Date: 2022-04-26 17:44:45
  * @LastEditors: Lee
- * @LastEditTime: 2022-04-26 17:46:53
+ * @LastEditTime: 2022-04-27 09:12:57
  */
-const { createStore } = require('redux');
-const { reducers } = require('./reducers');
+const { configureStore } = require('@reduxjs/toolkit');
+const { reducer } = require('./reducers');
 // 根据reducers创建store对象
-const store = createStore(reducers);
+const store = configureStore({ reducer });
 
 module.exports = {
   store,

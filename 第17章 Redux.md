@@ -116,7 +116,7 @@ store.dishpatch(CHANGE_NAME("李好帅"));
 $ mkdir hello-redux
 $ cd hello-redux
 $ npm init -y
-$ npm install redux
+$ npm install @reduxjs/toolkit
 $ touch index.js
 ```
 
@@ -161,8 +161,8 @@ const initialState = {
   dialog: { status: false },
 };
 
-// -- reducers
-const reducers = (state = initialState, action) => {
+// -- reducer
+const reducer = (state = initialState, action) => {
   switch (action.type) {
     case 'CHANGE_NAME':
       return {
@@ -194,17 +194,17 @@ const reducers = (state = initialState, action) => {
 };
 
 module.exports = {
-  reducers,
+  reducer,
 };
 ```
 
 4）处理store：*`store/index.js`*
 
 ```js
-const { createStore } = require('redux');
-const { reducers } = require('./reducers');
+const { configureStore } = require('@reduxjs/toolkit');
+const { reducer } = require('./reducers');
 // 根据reducers创建store对象
-const store = createStore(reducers);
+const store = configureStore({ reducer });
 
 module.exports = {
   store,
@@ -257,72 +257,73 @@ unsubscribe();
 
 实际开发中，reducer 可能会有很多，这样看起来代码有些冗长，我们可以根据功能对其进行拆分。接下来我们对刚刚的reducer进行拆分，结构如下：
 
-```
-|- reducers
-   |- index.js  // => 主reducer，合并子reducer
-   |- card.js   // => 子reducer
-	 |- dialog.js // => 子reducer
+```ini
+.
+├── reducers
+│   ├── index.js    # 主reducer，合并子reducer
+│   ├── card.js     # 子reducer
+│   └── dialog.js   # 子reducer
 ```
 
 分解reducer
 
-=> card.js
+*`store/reducers/card.js`*
 
 ```js
 const card = (state = {}, action) => {
-    switch (action.type) {
-        case "CHANGE_NAME":
-            return { ...state, name: action.name }
-        case "CHANGE_PICTURE":
-            return { ...state, picture: action.picture }
-        default:
-            return state;
-    }
-}
+  switch (action.type) {
+    case 'CHANGE_NAME':
+      return { ...state, name: action.name };
+    case 'CHANGE_PICTURE':
+      return { ...state, picture: action.picture };
+    default:
+      return state;
+  }
+};
 
 module.exports = {
-    card
-}
-```
-
-=> dialog.js
-
-```js
-const dialog = (state = {}, action) => {
-    switch (action.type) {
-        case "SHOW_DIALOG":
-            return { status: true }
-        case "CLOSE_DIALOG":
-            return { status: false }
-        default:
-            return state;
-    }
-}
-
-module.exports = {
-    dialog
+  card,
 };
 ```
 
-==> index.js 合并reducer
+*`store/reducers/dialog.js`*
+
+```js
+const dialog = (state = {}, action) => {
+  switch (action.type) {
+    case 'SHOW_DIALOG':
+      return { status: true };
+    case 'CLOSE_DIALOG':
+      return { status: false };
+    default:
+      return state;
+  }
+};
+
+module.exports = {
+  dialog,
+};
+```
+
+*`store/reducers/index.js`*
 
 ```js
 // 引入combineReducers，合并reducer
-const { combineReducers } = require("redux");
+const { combineReducers } = require('redux');
 // 引入两个子reducer
-const { card } = require("./card");
-const { dialog } = require("./dialog");
+const { card } = require('./card');
+const { dialog } = require('./dialog');
 
 // 合并reducers
-const reducers = combineReducers({
-    card,
-    dialog
+const reducer = combineReducers({
+  card,
+  dialog,
 });
 
 // 导出合并之后的reduces
 module.exports = {
-    reducers
-}
+  reducer,
+};
 ```
 
 > 注意：reducer 的 key 值其实就是state里面的key值。比如上述示例中的 card 和 dialog 对应了state 数据里的key。
@@ -334,24 +335,25 @@ Redux 官方提供的 React 绑定库 [React-Redux](https://github.com/reactjs/r
 ## 1. 安装 
 
 ```shell
-# NPM
-$ npm install --save redux react-redux
-# YARN
-$ yarn add --save redux react-redux
+$ npx create-react-app hello-react-redux
+$ cd hello-react-redux
+$ npm install react-redux @reduxjs/toolkit
 ```
 
-## 2. 容器组件 & 展示组件
+## 2. react-redux in class
 
-React-Redux 将所有组件分成两大类：容器组件 / 展示组件。
+### 容器组件 & 展示组件
 
-**# 展示组件**
+react-redux 将所有组件分成两大类：容器组件 / 展示组件。
+
+**1）展示组件**
 
 展示组件有以下几个特征：
 
 - 只负责 UI 的呈现，不带有任何业务逻辑
-- 没有状态（ 即不使用 *this.state*  这个变量 ）
-- 所有数据都由参数（ *this.props*）提供
-- 不使用任何 Redux 的 API
+- 没有状态（ 即不使用 `this.state` 这个变量 ）
+- 所有数据都由参数（ `this.props` ）提供
+- 不使用任何 redux 的 API
 
 下面是一个展示组件的示例：
 
@@ -363,27 +365,27 @@ const Button = props => (
 
 因为不含有状态，展示组件又称为"纯组件"，即它跟纯函数一样，纯粹由参数决定它的值。
 
-**# 容器组件**
+**2）容器组件**
 
 容器组件的特征恰恰相反。
 
 - 负责管理数据和业务逻辑，不负责 UI 的呈现
 - 带有内部状态
-- 使用 Redux 的 API
+- 使用 redux  的 API
 
 总之，只要记住一句话就可以了：展示组件负责 UI 的呈现，容器组件负责管理数据和逻辑。
 
-React-Redux 规定，所有的展示组件都由用户提供，容器组件则是由 React-Redux 自动生成。也就是说，用户负责视觉层，状态管理则是全部交给它。
+react-redux 规定，所有的展示组件都由用户提供，容器组件则是由 react-redux 自动生成。也就是说，用户负责视觉层，状态管理则是全部交给它。
 
-|                | 展示组件           | 容器组件               |
-| -------------- | -------------- | ------------------ |
-| **作用**         | 描述如何展现（骨架、样式）  | 描述如何运行（数据获取、状态更新）  |
-| **直接使用 Redux** | 否              | 是                  |
-| **数据来源**       | props          | 监听 Redux state     |
-| **数据修改**       | 从 props 调用回调函数 | 向 Redux 派发 actions |
-| **调用方式**       | 手动             | 通常由 React Redux 生成 |
+| #                  | 展示组件                   | 容器组件                           |
+| ------------------ | -------------------------- | ---------------------------------- |
+| **作用**           | 描述如何展现（骨架、样式） | 描述如何运行（数据获取、状态更新） |
+| **直接使用 Redux** | 否                         | 是                                 |
+| **数据来源**       | props                      | 监听 redux state                   |
+| **数据修改**       | 从 props 调用回调函数      | 向 redux 派发 actions              |
+| **调用方式**       | 手动                       | 通常由 react-redux 生成            |
 
-## 3. connect()
+### connect()
 
 React-Redux 提供`connect`方法，用于从展示组件生成容器组件。`connect`的意思，就是将这两种组件连起来。
 
@@ -411,12 +413,12 @@ const ContainerCounter = connect(
 
 上面代码中，`connect` 方法接受两个参数：`mapStateToProps` 和 `mapDispatchToProps`。它们定义了 展示 组件的业务逻辑。前者负责输入逻辑，即将`state`映射到 展示 组件的参数（`props`），后者负责输出逻辑，即将用户对 展示 组件的操作映射成 Action。
 
-## 4. mapStateToProps()
+### mapStateToProps()
 
 `mapStateToProps` 是一个函数。它的作用就是像它的名字那样，建立一个从（外部的）`state`对象到（展示组件的）`props` 对象的映射关系。作为函数，`mapStateToProps` 执行后应该返回一个对象，里面的每一个键值对就是一个映射。请看下面的例子。
 
 ```js
-// => 定义state & disptach 的映射，也就是所谓的容器组件。
+// -- 定义state & disptach 的映射，也就是所谓的容器组件。
 const mapStateToProps = state => ({
     counter: state.counter.number
 });
@@ -432,9 +434,9 @@ mapStateToProps 的第一个参数总是 state 对象，还可以使用第二个
 
 connect 方法可以省略 mapStateToProps 参数，那样的话，UI 组件就不会订阅Store，就是说 Store 的更新不会引起 UI 组件的更新。 
 
-## 5. mapDispatchToProps()
+### mapDispatchToProps()
 
-mapDispatchToProps 是 connect 函数的第二个参数，用来建立 展示 组件的参数到 store.dispatch 方法的映射。也就是说，它定义了哪些用户的操作应该当作 Action，传给 Store。它可以是一个函数，也可以是一个对象。
+`mapDispatchToProps` 是 connect 函数的第二个参数，用来建立 展示 组件的参数到 `store.dispatch` 方法的映射。也就是说，它定义了哪些用户的操作应该当作 Action，传给 Store。它可以是一个函数，也可以是一个对象。
 
 如果 mapDispatchToProps 是一个函数，会得到 `dispatch` 和 `ownProps`（容器组件的`props`对象）两个参数。
 
@@ -447,7 +449,7 @@ const mapDispatchToProps = dispatch => ({
 
 从上面代码可以看到，mapDispatchToProps 作为函数，应该返回一个对象，该对象的每个键值对都是一个映射，定义了 展示 组件的参数怎样发出 Action。
 
-## 6.  Provider
+### Provider
 
 `connect` 方法生成容器组件以后，需要让容器组件拿到 `state` 对象，才能生成 展示 组件的参数。
 
@@ -514,223 +516,194 @@ VisibleTodoList.contextTypes = {
 
 `React-Redux` 自动生成的容器组件的代码，就类似上面这样，从而拿到`store`。
 
-## 7. 应用
+### 应用
 
 接下来通过Counter示例给大家讲解如何使用react-redux
 
-第一步：创建目录目录结构
-
-```
-|- src
-	 |- components   展示组件
-	 		|- counter.js
-   |- containers   容器组件
-   		|- counter.js
-   |- store
-   		|- index.js
-   		|- action-types.js
-   		|- reducers.js
-   		|- actions.js
-   |- App.js
-   |- index.js
-   |- index.css
-|- package.json
-```
-
-第二步：定义action-types
+1）定义 action-types：*`src/store/action-types.js`*
 
 ```react
-// => ./src/store/action-types.js
-export const INCREASE = "INCREASE"; // 增加
-export const DECREASE = "DECREASE"; // 减少
+export const INCREMENT = 'INCREMENT'; 
+export const DECREMENT = 'DECREMENT'; 
 ```
 
-> 提示：action-types里定义的都是根据各组件的需要才定义的类型常量，属于一一对应的一种关系。
+> 提示：action-types 里定义的都是根据各组件的需要才定义的类型常量，属于一一对应的一种关系（非必须）
 
-第三步：定义actions
+2）定义 actions：*`src/store/actions.js`*
 
 ```js
-// ./src/store/actions.js
-import { INCREASE, DECREASE } from "./action-types";
+import { INCREMENT, DECREMENT } from './action-types';
 
-// +
-export const inCrease = (number) => ({ type: INCREASE, number });
-// -
-export const deCrease = (number) => ({ type: DECREASE, number });
+export const increment = (number) => ({ type: INCREMENT, number });
+export const decrement = (number) => ({ type: DECREMENT, number });
 ```
 
-第四步：处理reducers
+3）处理 reducers：*`src/store/reducers.js`*
 
 ```react
-// => ./src/store/reducers.js
-
-import { INCREASE, DECREASE } from './action-types';
+import { INCREMENT, DECREMENT } from './action-types';
 
 const initialState = {
-    number: 0,
-    message: '众志成城，抗疫救灾'
+  number: 0,
+  message: '众志成城，抗疫救灾',
 };
 
 const reducers = (state = initialState, action) => {
-    switch (action.type) {
-        case INCREASE:
-            return {
-                ...state,
-                number: state.number + action.number
-            };
-        case DECREASE:
-            return {
-                ...state,
-                number: state.number - action.number
-            };
-        default: {
-            return state;
-        }
+  switch (action.type) {
+    case INCREMENT:
+      return {
+        ...state,
+        number: state.number + action.number,
+      };
+    case DECREMENT:
+      return {
+        ...state,
+        number: state.number - action.number,
+      };
+    default: {
+      return state;
     }
-}
-
+  }
+};
 export default reducers;
-
 ```
 
-> 提示：如果reducers比较复杂，我们可以拆分reducers，然后通过 redux 提供的 combineReducers 将拆分的各个reducer 进行合并。如下所示：
+> 提示：如果 reducers 比较复杂，我们可以拆分 reducers，然后通过 redux 提供的 `combineReducers` 将拆分的各个 reducer 进行合并。如下所示：
 >
 > ```js
-> import { combineReducers } from "redux";
-> // 引入子reducer
-> import { a } from "./a";
-> import { b } from "./b";
-> // 合并reducers
-> export const reducer = combineReducers({a, b});
+> import { combineReducers } from '@reduxjs/toolkit';
+> // -- 引入子reducer
+> import { a } from './a';
+> import { b } from './b';
+> // -- 合并reducers
+> export const reducer = combineReducers({ a, b });
 > ```
 
-第五步：生成store
+4）生成 store：*`src/store/index.js`*
 
 ```js
-// => ./src/store/index.js
-
-// 引入redux提供的createStore方法来创建仓库
-import { createStore } from 'redux';
-// 引入所有用到的reducer
+import { configureStore } from '@reduxjs/toolkit';
 import reducers from './reducers';
-// 生成store
-const store = createStore(reducers);
-// 导出store
-export default store;
+
+export default configureStore({
+  reducer: reducers
+});
+
 ```
 
-第六步：注入Store
+5）注入 store：*`src/index.js`*
 
 ```react
 import React from 'react';
-import ReactDOM from 'react-dom';
+import ReactDOM from 'react-dom/client';
 import App from './App';
-
-import { Provider } from 'react-redux';
 import store from './store';
+import { Provider } from 'react-redux';
 
-ReactDOM.render(
+const root = ReactDOM.createRoot(document.getElementById('root'));
+root.render(
+  <React.StrictMode>
     <Provider store={store}>
-        <App />
-    </Provider>,
-    document.getElementById('root')
-)
+      <App />
+    </Provider>
+  </React.StrictMode>
+);
 ```
 
-第七步：构造展示组件
+6）构造组件：*`src/components/Counter.jsx`*
 
 ```react
-// => 展示组件
-import React from 'react'
-
-const Counter = (props) => {
-    // 通过mapStateToProps和mapDispatchToProps
-    // 将state状态还有dispatch方法都转化到了props属性上了
-    const { number, message, inCrease, deCrease } = props;
-    return (
-        <div className="counter">
-            <p>{message}</p>
-            <button onClick={() => {inCrease(1)}}>+</button>
-            {number}
-            <button onClick={() => {deCrease(1)}}>-</button>
-        </div>
-    )
-}
-
-export default Counter;
-```
-
-第八步：构造容器组件
-
-```react
-// => ./src/containers/counter.js
-// => 导入connect容器组件生成方法
+import * as React from 'react';
 import { connect } from 'react-redux';
-// => 导入actions
-import { inCrease, deCrease} from '../store/actions';
-// => 导入展示组件
-import Counter from '../components/counter'
+import { increment, decrement } from '../store/actions';
 
-// => 定义state & disptach 的映射，也就是所谓的容器组件。
-const mapStateToProps = state => ({
-    message: state.message,
-    number: state.number
-});
-const mapDispatchToProps = dispatch => ({
-    inCrease: (n) => dispatch(inCrease(n)),
-    deCrease: (n) => dispatch(deCrease(n))
-});
+// -- 展示组件
+const Counter = (props) => {
+  return (
+    <div className='counter'>
+      <p>{props.message}</p>
+      <button onClick={() => props.increment(1)}>+</button>
+      <span>{props.number}</span>
+      <button onClick={() => props.decrement(1)}>-</button>
+    </div>
+  );
+};
 
-// => 生成并导出容器组件
+// -- 容器组件
 export default connect(
-    mapStateToProps,
-    mapDispatchToProps
+  // mapStateToProps
+  (state) => ({
+    message: state.message,
+    number: state.number,
+  }),
+  // mapDispatchToProps
+  (dispatch) => ({
+    increment: (n) => dispatch(increment(n)),
+    decrement: (n) => dispatch(decrement(n)),
+  })
 )(Counter);
 ```
 
-第九步：渲染容器组件 - 容器组件包裹了展示组件
+7）引入组件：*`src/App.js`*
 
 ```react
-import React from 'react';
-// => 导入容器组件（内部包含了展示组件）
-import Counter from './containers/counter';
-
-const App = () => {
+import Counter from './components/Counter';
+export default function App() {
   return (
-    <div className="App">
+    <div className='App'>
       <Counter />
     </div>
   );
 }
-export default App;
 ```
 
-## 8. 路由中使用
+### 路由中使用
 
 ```react
 ReactDOM.render(
-    <Provider store={store}>
-        <Router>
-            <App />
-        </Router>
-    </Provider>,
-    document.getElementById('root')
+  <Provider store={store}>
+    <Router>
+      <App />
+    </Router>
+  </Provider>,
+  document.getElementById('root')
 );
 ```
 
+## 3. react-redux in hooks
 
+在 Hooks 中在配置 store 上并无太大区别，区别在于对 读取/更新 store 做了简化，主要API如下：
 
+- [`useSelector()`](https://react-redux.js.org/api/hooks#useselector)
+- [`useDispatch()`](https://react-redux.js.org/api/hooks#usedispatch)
+- [`useStore()`](https://react-redux.js.org/api/hooks#usestore)
 
+上面的hooks，让我们不再需要 mapStateToProps / mapDispatchToProps，我们来看示例：
 
+```jsx
+import * as React from 'react';
+import { useSelector, useDispatch } from 'react-redux';
+import { increment, decrement } from '../store/actions';
 
+export default function Counter(props) {
+  // -- dispatch
+  const dispatch = useDispatch();
+  // -- 读取store
+  const data = useSelector((state) => ({
+    number: state.number,
+    message: state.message,
+  }));
 
-
-
-
-
-
-
-
+  return (
+    <div className='counter'>
+      <p>{data.message}</p>
+      <button onClick={() => dispatch(increment(1))}>+</button>
+      <span>{data.number}</span>
+      <button onClick={() => dispatch(decrement(1))}>-</button>
+    </div>
+  );
+}
+```
 
 
 

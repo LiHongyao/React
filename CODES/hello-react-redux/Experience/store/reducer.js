@@ -2,7 +2,7 @@
  * @Author: Lee
  * @Date: 2022-04-26 17:39:00
  * @LastEditors: Lee
- * @LastEditTime: 2022-04-26 17:40:03
+ * @LastEditTime: 2022-04-27 09:14:02
  */
 // -- 默认数据结构
 const initialState = {
@@ -10,8 +10,8 @@ const initialState = {
   dialog: { status: false },
 };
 
-// -- reducers
-const reducers = (state = initialState, action) => {
+// -- reducer
+const reducer = (state = initialState, action) => {
   switch (action.type) {
     case 'CHANGE_NAME':
       return {
@@ -43,5 +43,5 @@ const reducers = (state = initialState, action) => {
 };
 
 module.exports = {
-  reducers,
+  reducer,
 };
