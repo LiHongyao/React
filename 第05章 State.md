@@ -1,40 +1,74 @@
 # 一、概述
 
-我们知道，通过 `props` 可以实现数据的传递，但是有一个问题，那就是如果我们需要动态更新数据，就不能通过 `props` 了，因为 react 中的 `props` 显示在页面上后，并不能动态响应，此时，我们就需要通过状态（`State`）来实现，状态与属性十分相似，**但是状态是私有的，完全受控于当前组件**。我们来看一组关于定时器更新当前时间的示例。
+我们知道，通过 props 可以实现数据的传递，但是有一个问题，那就是如果我们需要动态更新数据，就不能通过 props 来实现了，因为 React 中的 props 显示在页面上后，并不能动态响应，此时，我们就需要通过 state 来实现，state 与 props 十分相似，**但是 state 是私有的，完全受控于当前组件**。
 
 # 二、示例
 
-> Tips：这里，我们通过 `class` 组件实现该需求。
+我们来看一组关于定时器更新当前时间的示例。
 
 1）定义组件
 
-```react
-import { Component } from 'react';
+> **函数组件**：使用了 Hooks 相关钩子函数，在后续章节中会具体介绍。
 
-class LocaleTime extends Component {
-  // -- 构造函数
-  constructor(props) {
-    super(props);
-    // init state
-    this.state = {
-      date: new Date(),
+```tsx
+import React, { useEffect, useState } from 'react';
+
+const LocaleTime: React.FC = () => {
+  // -- initial states
+  const [date, setDate] = useState<Date | null>(null);
+
+  // -- life circles
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setDate(new Date());
+    }, 1000);
+    return () => {
+      clearInterval(timer);
     };
+  }, []);
+
+  // -- renders
+  return <h5>北京时间：{date ? date.toLocaleTimeString() : '-'}</h5>;
+};
+
+export default LocaleTime;
+
+```
+
+> **类组件**
+
+```react
+import React from 'react';
+
+interface IProps {}
+interface IState {
+  date: Date;
+}
+
+class LocaleTime extends React.Component<IProps, IState> {
+
+  // -- define components props
+  timer: any;
+
+  // -- constructor
+  constructor(props: IProps) {
+    super(props);
+    this.state = { date: new Date() };
   }
-  // -- 生命周期
-  componentDidMount() {
-    // init timer & update state
+  
+  // -- life circles
+  componentDidMount(): void {
     this.timer = setInterval(() => {
-      this.setState({
-        date: new Date(),
-      });
+      this.setState({ date: new Date() });
     }, 1000);
   }
-  componentWillUnmount() {
-    // clear timer
+  componentWillUnmount(): void {
     clearInterval(this.timer);
   }
-  render() {
-    return <h1>北京时间：{this.state.date.toLocaleTimeString()}</h1>;
+
+  // -- renders
+  render(): React.ReactNode {
+    return <h5>北京时间：{this.state.date.toLocaleTimeString()}</h5>;
   }
 }
 
@@ -56,8 +90,6 @@ const App = () => {
 export default App;
 ```
 
-
-
 3）效果演示
 
 ![](IMGS/state.gif)
@@ -74,25 +106,25 @@ export default App;
 
 # 三、注意 *
 
-## 1. 不要直接更新状态
+## 1. 不要直接更新 State
 
 例如，此代码不会重新渲染组件：
 
 ```js
 // Wrong
-this.state.comment = 'Hello';
+this.state.date = new Date();
 ```
 
-应当使用 `setState()`：
+而是应该使用 `setState()`：
 
 ```js
 // Correct
-this.setState({comment: 'Hello'});
+this.setState({ date: new Date() });
 ```
 
 > 提示：构造函数是唯一可以给 `this.state` 赋值的地方。
 
-## 2. 状态更新可能是异步的
+## 2. State 的更新可能是异步的
 
 出于性能考虑，React 可能会把多个 `setState()` 调用合并成一个调用。
 
@@ -107,7 +139,7 @@ this.setState({
 });
 ```
 
-要解决这个问题，可以让 `setState()` 接收一个函数而不是一个对象。这个函数用上一个 state 作为第一个参数，将此次更新被应用时的 props 做为第二个参数：
+要解决这个问题，可以让 `setState()` 接收一个函数而不是一个对象。这个函数用上一个 state 作为第一个参数，将此次更新被应用时的 props 做为第二个参数：：
 
 ```js
 // Correct
@@ -122,7 +154,7 @@ this.setState((state, props) => ({
 
 例如，你的 state 包含几个独立的变量：
 
-```js
+```tsx
 constructor(props) {
   super(props);
   this.state = {
@@ -134,7 +166,7 @@ constructor(props) {
 
 然后你可以分别调用 `setState()` 来单独地更新它们：
 
-```js
+```tsx
 componentDidMount() {
   fetchPosts().then(response => {
     this.setState({
@@ -150,15 +182,15 @@ componentDidMount() {
 }
 ```
 
-这里的合并是浅合并，所以 `this.setState({comments})` 完整保留了 `this.state.posts`， 但是完全替换了 `this.state.comments`。
+这里的合并是浅合并，所以 `this.setState({ comments })` 完整保留了 `this.state.posts`， 但是完全替换了 `this.state.comments`。
 
 # 四、数据自顶向下流动
 
-不管是父组件或是子组件都无法知道某个组件是有状态的还是无状态的，并且它们也并不关心它是函数组件还是 `class` 组件。
+不管是父组件或是子组件都无法知道某个组件是有状态的还是无状态的，并且它们也并不关心它是函数组件还是 class 组件。
 
-这就是为什么称 `state` 为局部的或是封装的的原因。除了拥有并设置了它的组件，其他组件都无法访问。
+这就是为什么称 state 为局部的或是封装的的原因。除了拥有并设置了它的组件，其他组件都无法访问。
 
-组件可以选择把它的 `state` 作为 `props` 向下传递到它的子组件中：
+组件可以选择把它的 state 作为 props 向下传递到它的子组件中：
 
 ```html
 <FormattedDate date={this.state.date} />
@@ -172,9 +204,9 @@ function FormattedDate(props) {
 }
 ```
 
-这通常会被叫做 “**自上而下**” 或是 “**单向**” 的数据流。任何的 `state` 总是所属于特定的组件，而且从该 state 派生的任何数据或 UI 只能影响树中“低于”它们的组件。
+这通常会被叫做 “**自上而下**” 或是 “**单向**” 的数据流。任何的 state 总是所属于特定的组件，而且从该 state 派生的任何数据或 UI 只能影响树中“低于”它们的组件。
 
-如果你把一个以组件构成的树想象成一个 `props` 的数据瀑布的话，那么每一个组件的 `state` 就像是在任意一点上给瀑布增加额外的水源，但是它只能向下流动。
+如果你把一个以组件构成的树想象成一个 props 的数据瀑布的话，那么每一个组件的 state 就像是在任意一点上给瀑布增加额外的水源，但是它只能向下流动。
 
 为了证明每个组件都是真正独立的，我们可以创建一个渲染三个 `LocaleTime` 的 `App` 组件：
 

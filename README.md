@@ -1,32 +1,18 @@
-官网地址：<https://zh-hans.reactjs.org/>
-
 # 一、概述
 
-React 是 Facebook 在2013年推出的一个用来构建UI（用户界面）的 JavaScript 库，他们认为MVC无法满足他们的扩展需求。
-
-React主要用于构建UI，很多人认为 React 是 MVC 中的 V（视图）。
-
-React 起源于 Facebook 的内部项目，用来架设 Instagram 的网站，并于 2013 年 5 月开源。
-
-React 拥有较高的性能，代码逻辑非常简单，越来越多的人已开始关注和使用它。
+[React >>](https://zh-hans.reactjs.org/) 是 Facebook 在2013年推出的一个用于构建用户界面的 JavaScript 库。
 
 # 二、优势
 
 - 实现对虚拟DOM的操作，使得它速度快，提高了Web性能。
 
-- 组件化，模块化。react里每一个模块都是一个组件，组件化开发，可维护性高。
+- 组件化，模块化。React 里每一个模块都是一个组件，组件化开发，可维护性高。
 
-- 单向数据流，比较有序，便于管理，它随着React视图库的开发而被Facebook概念化。
+- 单向数据流，比较有序，便于管理，它随着 React 视图库的开发而被 Facebook 概念化。
 
 - 跨浏览器兼容：虚拟DOM帮助我们解决了跨浏览器问题，它为我们提供了标准化的API，甚至在IE8中都是没问题的。
 
-# 三、不足
-
-- react中只是MVC模式的View部分，要依赖引入很多其他模块开发。
-
-- 当父组件进行重新渲染操作时，即使子组件的props或state没有做出任何改变，也会同样进行重新渲染。
-
-# 四、特点
+# 三、特点
 
 - 声明式
 
@@ -46,7 +32,7 @@ React 拥有较高的性能，代码逻辑非常简单，越来越多的人已�
 
   React 还可以使用 Node 进行服务器渲染，或使用 [React Native](https://reactnative.dev/) 开发原生移动应用。
 
-# 五、构建项目
+# 四、构建项目
 
 ## 1. 直接下载
 
@@ -61,85 +47,58 @@ $ npm install react
 ## 3. CRA（官方脚手架）*
 
 ```shell
-$ npx create-react-app project-name [--template typescript] 
-$ cd hello-react & npm install
-$ npm start
+$ npx create-react-app@latest react-learning --template typescript
+$ cd react-learning & npm start
 ```
 
 > Tips：
 >
-> - `project-name`：项目名称
->
-> - `--template typescript `：安装TS版本项目模板；
+> - `react-learning`：项目名称
+> - `--template typescript `：安装TS版本项目模板
 
-## 4. Vite
+## 4. Vite *
 
 ```shell
-$ npm create vite@latest project-name -- --template react
+$ npm create vite@latest react-learning -- --template react-ts
 ```
 
 > Tips：参考 <https://cn.vitejs.dev/guide/#scaffolding-your-first-vite-project>
 
-# 六、目录结构
-
-```ini
-hello-react
-.
-├── node_modules
-├── public
-├── src
-│   ├── app.js           # 根组件
-│   ├── index.css        # 全局样式
-│	└── index.js         # 入口文件
-├── .gitignore           # git 忽略文件
-├── package-lock.json
-├── package.json
-└── README.md
-```
-
-> Tips：脚手架构建项目之后，删除冗余文件，保留如上目录结构。
-
-# 七、初体验
+# 五、初体验
 
 修改代码文件
 
-> src/index.js
+> src/index.tsx
 
 ```tsx
-// -- 引入核心依赖
-import { StrictMode } from 'react';
-import { createRoot } from 'react-dom/client';
-
+// -- 引入相关依赖
+import React from 'react';
+import ReactDOM from 'react-dom/client';
 // -- 引入全局样式
 import './index.css';
-
 // -- 引入根组件
 import App from './App';
 
-// -- 渲染根视图
-const rootElement = document.getElementById('root');
-const root = createRoot(rootElement);
-
+// -- 创建渲染
+const root = ReactDOM.createRoot(
+  document.getElementById('root') as HTMLElement
+);
 root.render(
-  <StrictMode>
+  <React.StrictMode>
     <App />
-  </StrictMode>
+  </React.StrictMode>
 );
 ```
 
-> src/app.js
+> src/App.tsx
 
 ```tsx
-// -- 函数组件
-const App = () => {
-  return (
-    <div className='App'>
-      <p>Hello, React.js!</p>
-    </div>
-  );
+import React from 'react';
+
+const App: React.FC = () => {
+  return <div className='App'>Hello, React.js!</div>;
 };
 
-// -- 导出组件
 export default App;
 ```
 
