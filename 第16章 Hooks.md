@@ -1283,11 +1283,19 @@ export default Friends;
 
 # 四、React Hooks 数据流
 
-[参考这里 >>](https://juejin.im/post/5e8bd87851882573c66cfc68#heading-6)
+- 单组件数据流：
+  - useState
+  - useReducer
+- 嵌套组件数据流：Props
+- 跨组件数据流：
+  - Context
+  - Context + useReducer
+  - Redux-Tollkit
+  - ....
 
 # 五、拓展
 
-## 深入理解 useEffect & useLayoutEffect
+## useEffect & useLayoutEffect
 
 我们先看下 React 官方文档对这两个 hook 的介绍，建立个整体认识：
 
