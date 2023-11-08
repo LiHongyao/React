@@ -1,10 +1,3 @@
-/*
- * @Author: Lee
- * @Date: 2023-02-16 21:07:57
- * @LastEditors: Lee
- * @LastEditTime: 2023-02-16 21:08:09
- * @Description: 
- */
 import { ActionCreator } from 'redux';
 
 // -- Define Actions

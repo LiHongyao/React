@@ -56,7 +56,7 @@ $ npm create vite@latest <project-name> -- --template react-ts
 
 > Tips：参考 <https://cn.vitejs.dev/guide/#scaffolding-your-first-vite-project>
 
-## 5. Next.js
+## 5. Next.js（*推荐*）
 
 **[Next.js](https://nextjs.org/) 是一个全栈式的 React 框架**。它用途广泛，可以让你创建任意规模的 React 应用——可以是静态博客，也可以是复杂的动态应用。要创建一个新的 Next.js 项目，请在你的终端运行：
 

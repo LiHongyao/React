@@ -1,11 +1,3 @@
-/*
- * @Author: Lee
- * @Date: 2023-02-16 16:18:21
- * @LastEditors: Lee
- * @LastEditTime: 2023-02-16 17:47:31
- * @Description:
- */
-
 // 👉 封装一个获取DOM元素的函数
 const $ = (sel) => document.querySelector(sel);
 

@@ -1,10 +1,3 @@
-/*
- * @Author: Lee
- * @Date: 2023-02-16 21:07:39
- * @LastEditors: Lee
- * @LastEditTime: 2023-02-17 13:37:34
- * @Description:
- */
 import { ActionCreator } from 'redux';
 import { AppThunk } from '..';
 import { statusToggle } from './statusReducer';

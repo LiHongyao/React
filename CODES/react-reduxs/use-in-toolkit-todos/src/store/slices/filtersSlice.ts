@@ -1,11 +1,3 @@
-/*
- * @Author: Lee
- * @Date: 2023-02-11 17:22:28
- * @LastEditors: Lee
- * @LastEditTime: 2023-02-14 17:32:03
- * @Description:
- */
-
 import { PayloadAction, createSlice } from '@reduxjs/toolkit';
 
 export enum FiltersStatus {

@@ -1,11 +1,3 @@
-/*
- * @Author: Lee
- * @Date: 2023-02-12 23:13:58
- * @LastEditors: Lee
- * @LastEditTime: 2023-02-12 23:16:34
- * @Description:
- */
-
 import { TypedUseSelectorHook, useDispatch, useSelector } from 'react-redux';
 import { AppDispatch, RootState } from '@/store';
 

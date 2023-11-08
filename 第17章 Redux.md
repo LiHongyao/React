@@ -131,6 +131,8 @@ Redux 的出现改变了React 的这种窘迫处境，它提供了整个应用�
 
 3. 使用 reducer 纯函数进行更改
 
+应用的整体全局状态以对象树的方式存放于单个 *store*。 唯一改变状态树（state tree）的方法是创建 *action*，一个描述发生了什么的对象，并将其 *dispatch* 给 store。 要指定状态树如何响应 action 来进行更新，你可以编写纯 *reducer* 函数，这些函数根据旧 state 和 action 来计算新 state。
+
 # 四、Redux 术语
 
 ## 1. Actions
@@ -438,7 +440,7 @@ export type AppThunk<ReturnType = void> = ThunkAction<ReturnType, RootState, unk
 export default store;
 ```
 
-# 六、React-Redux
+# 六、React-Redux（了解）
 
 ## Use-in-js
 
@@ -1284,7 +1286,7 @@ export default App;
 
 > **提示：** 注入Store代码和示例 **Use-in-React-Class** 一致，你可以直接复制/粘贴过来使用.
 
-# 七、Redux-Toolkit *
+# 七、Redux-Toolkit（重点）
 
 **👉  [Redux-Toolkit >>](https://cn.redux-toolkit.js.org/)**
 
@@ -1679,6 +1681,10 @@ ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
 
 ## Examples：Todos
 
+Node：v18.17.1
+
+pnpm：v8.7.5
+
 **👉 Todos Intro.**
 
 接下来我们以一个小型的  “待办事项” 应用程序开始。首先弄清楚这个应用程序的初始业务需求：
@@ -1696,15 +1702,56 @@ ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
 
 稍后将添加更多需求。
 
-### 1. 安装 & 配置
+### 1. 创建 & 配置
+
+#### 创建项目
+
+首先我们通过 vite 创建一个 react-ts 项目
 
 ```shell
-$ npm create vite@latest react-reduxs -- --template react-ts
-$ cd react-reduxs && npm install && code .
-$ npm install @reduxjs/toolkit react-redux less
+$ pnpm create vite todolist --template react-ts
+$ cd todolist && pnpm install && code .
 ```
 
+#### 配置别名
 
+引用模块时，使用 @ 引用，避免 `../..` 影响可读性，这里需要配置一下别名。
+
+① 安装相关依赖
+
+```shell
+$ pnpm i @types/node -D
+```
+② 更新 `vite.config.ts`
+
+```typescript
+import { defineConfig } from 'vite';
+import react from '@vitejs/plugin-react';
+import { resolve } from 'path';
+export default defineConfig({
+  plugins: [react()],
+  resolve: {
+    alias: {
+      '@': resolve(__dirname, 'src'),
+    },
+  },
+});
+```
+
+③ 在 `tsconfig.json` 文件中新增如下配置：
+
+```json
+{
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["src/*"]
+    }
+  }
+}
+```
+
+#### 目录结构
 
 ```
 .
@@ -1733,10 +1780,21 @@ $ npm install @reduxjs/toolkit react-redux less
 ├── ....
 ```
 
-### 2. Styles
+### 2. 安装依赖
 
-```less
+```shell
+$ pnpm i @reduxjs/toolkit react-redux redux-logger 
 ```
+
+```shell
+$ pnpm i less @types/redux-logger -D
+```
+
+> **提示**：示例使用 less 构建样式，所以这里需要安装 less。
+
+### 3. 创建 Redux Slice
+
+
 
 
 

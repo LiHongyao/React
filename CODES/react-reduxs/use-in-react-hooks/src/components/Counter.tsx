@@ -1,10 +1,3 @@
-/*
- * @Author: Lee
- * @Date: 2023-02-16 21:03:37
- * @LastEditors: Lee
- * @LastEditTime: 2023-02-17 09:33:49
- * @Description:
- */
 import React, { ChangeEvent, memo, useState } from 'react';
 import { useAppDispatch, useAppSelector } from '../stores/hooks';
 import {
