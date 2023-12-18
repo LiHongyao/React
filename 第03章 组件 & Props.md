@@ -1,8 +1,6 @@
 # 一、概述
 
-组件允许你将 UI 拆分为独立可复用的代码片段，并对每个片段进行独立构思。你可以 [参考详细组件 API](https://zh-hans.reactjs.org/docs/react-component.html)。
-
-组件，从概念上类似于 JavaScript 函数。它接受任意的入参（即 “props”），并返回用于描述页面展示内容的 React 元素。
+**组件** 是 React 的核心概念之一，组件允许你将 UI 拆分为独立可复用的代码片段，它们是构建用户界面（UI）的基础。
 
 在 React 中，组件分为 **类组件** 和 **函数组件** 两种，而 类组件目前提供了更多的功能，在实际开发中，我主要使用 **函数组件**。
 
@@ -24,7 +22,7 @@ function Welcome(props) {
 }
 ```
 
-该函数是一个有效的 React 组件，因为它接收唯一带有数据的 props（代表属性）对象与并返回一个 React 元素。这类组件被称为 **函数组件**，因为它本质上就是 JavaScript 函数。
+该函数是一个有效的 React 组件，因为它接收唯一带有数据的 props 对象与并返回一个 React 元素。这类组件被称为 **函数组件**，因为它本质上就是 JavaScript 函数。
 
 你同时还可以使用 ES6 的 class 来定义组件：
 
@@ -46,7 +44,7 @@ class Welcome extends React.Component {
 const element = <div />;
 ```
 
-不过，React 元素也可以是用户自定义的组件（*比如我们通过CRA创建项目中的APP组件*）：
+不过，React 元素也可以是用户自定义的组件（*比如我们通过Vite创建项目中的APP组件*）：
 
 ```react
 const element = <Welcome name="Sara" />;
@@ -193,34 +191,32 @@ React 非常灵活，但它也有一个严格的规则：
 > **函数组件**
 
 ```tsx
-import React from 'react';
+import React from "react";
 
-/** 定义接收的属性 */
+// -- 定义接收的属性
 interface IProps {
   name: string;
   job: string;
 }
-
-const Child: React.FC<IProps> = (props) => {
+const Child: React.FC<IProps> = ({ name, job }) => {
   return (
     <div>
-      {props.name} - {props.job}
+      {name} - {job}
     </div>
   );
 };
-
 export default Child;
 ```
 
 ```jsx
 {/* 通过属性Props传递数据 */}
-<Child name='李鸿耀' job='程序猿' />
+<Child name='张三' job='程序猿' />
 ```
 
 > **类组件**
 
 ```tsx
-import React from 'react';
+import React from "react";
 
 /** 定义接收的属性 */
 interface IProps {
@@ -245,10 +241,10 @@ export default Child;
 > **函数组件**
 
 ```typescript
-import React from 'react';
+import React from "react";
 
 interface IProps {
-  children: JSX.Element | Array<JSX.Element>;
+  children: JSX.Element | JSX.Element[];
 }
 
 const List: React.FC<IProps> = (props) => {
@@ -282,7 +278,7 @@ class List extends React.Component<IProps> {
 }
 ```
 
-### 属性验证 & 默认值
+### 属性验证 & 默认值（了解）
 
 > **TypeScript**
 
@@ -339,7 +335,7 @@ Child.defaultProps = {
 export default Child;
 ```
 
-## 子传父：methods
+## 子传父：Function
 
 原理：父组件在调用子组件的时候，将方法作为子组件的属性传递，在子组件中调用这个方法并将传递的数据作为函数参数从而实现子传父。
 

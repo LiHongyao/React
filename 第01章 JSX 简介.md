@@ -1,48 +1,59 @@
 # 一、概述
 
+> @See https://zh-hans.react.dev/learn/writing-markup-with-jsx
+
+**JSX** 是 JavaScript 语法扩展，可以让你在 JavaScript 文件中书写类似 HTML 的标签。
+
 ```jsx
 const element = <h1>Hello, world!</h1>;
 ```
 
-这个有趣的标签语法既不是字符串也不是 HTML。它被称为 JSX，是一个 JavaScript 的语法扩展。
-
 - JSX 标签就是 HTML 标签，只不过在js中书写这些标签的时候无需使用双引号括起来。
 - JSX 语法能够让我们更直观的看到组件的DOM结构，不能在浏览器上直接运行，最终会转换成js代码在浏览器中运行。
 
-# 二、为什么使用JSX
+JSX规则：
 
-React 认为渲染逻辑本质上与其他 UI 逻辑内在耦合，比如，在 UI 中需要绑定处理事件、在某些时刻状态发生变化时需要通知到 UI，以及需要在 UI 中展示准备好的数据。
+- 只能返回一个根元素
+- 标签必须闭合
+- 使用驼峰式命名法给 <del>**所有**</del> 大部分属性命名！
 
-React 并没有采用将 **标记与逻辑分离到不同文件** 这种人为的分离方式，而是通过将二者共同存放在称之为 “**组件**” 的松散耦合单元之中，来实现 关注点分离。
+# 二、为什么使用？
 
-React 不强制要求使用 JSX，但是大多数人发现，在 JavaScript 代码中将 JSX 和 UI 放在一起时，会在视觉上有辅助作用。它还可以使 React 显示更多有用的错误和警告消息。
+网页是构建在 HTML、CSS 和 JavaScript 之上的。多年以来，web 开发者都是将网页内容存放在 HTML 中，样式放在 CSS 中，而逻辑则放在 JavaScript 中 —— 通常是在不同的文件中！页面的内容通过标签语言描述并存放在 HTML 文件中，而逻辑则单独存放在 JavaScript 文件中。
+
+但随着 Web 的交互性越来越强，逻辑越来越决定页面中的内容。JavaScript 负责 HTML 的内容！这也是为什么 **在 React 中，渲染逻辑和标签共同存在于同一个地方——组件。**
+
+比如将一个按钮的渲染逻辑和标签放在一起可以确保它们在每次编辑时都能保持互相同步。反之，彼此无关的细节是互相隔离的，例如按钮的标签和侧边栏的标签。这样我们在修改其中任意一个组件时会更安全。
 
 # 三、JSX 表达式
 
-你可以任意地在 JSX 当中使用 JavaScript 表达式，在 JSX 当中的表达式要包含在大括号 `{}` 里：
+JSX 允许你在 js 中编写类似 HTML 的标签，从而使渲染的逻辑和内容可以写在一起。有时候，你可能想要在标签中添加一些 js 逻辑或者引用动态的属性。这种情况下，你可以在 JSX 的大括号内来编写 js。
 
 ```react
-const App: React.FC = () => {
-  // -- constants
-  const gitee = 'https://gitee.com/lihongyao';
-  const user = { firstName: 'Li', lastName: 'HONGYAO' };
-  const loginState = true;
+import React from "react";
 
-  // -- methods
-  const getFullName = (data: typeof user) => {
-    return `${data.firstName}-${data.lastName}!`;
+const JsxComp: React.FC = () => {
+  const name = "Gregorio Y. Zara";
+  const loginState = true;
+  const wrapCls = "wrap";
+
+  const getTime = () => {
+    return new Date().toLocaleString();
   };
 
   return (
-    <div className='App'>
-      <p>Hello, React.js!</p>
-      <p>Hello, {getFullName(user)}</p>
-      <p>登录状态：{loginState ? '「在线」' : '已下线 」'}</p>
+    <div className={wrapCls}>
+      {/* 插值 */}
+      <h1 style={{ color: "#FFA500" }}>{name}'s To Do List</h1>
+      {/* 表达式 */}
+      <p>status: {loginState ? "✅" : "❌"}</p>
+      {/* 调用方法 */}
+      <p>Time: {getTime()}</p>
     </div>
   );
 };
 
-export default App;
+export default JsxComp;
 ```
 
 JSX 本身也是一个表达式，在编译之后，JSX 表达式会被转为普通 JavaScript 函数调用，并且对其取值后得到 JavaScript 对象。

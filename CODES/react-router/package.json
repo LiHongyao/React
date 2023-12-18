@@ -1,5 +1,5 @@
 {
-  "name": "react-tutorials",
+  "name": "react-router",
   "private": true,
   "version": "0.0.0",
   "type": "module",
@@ -10,9 +10,9 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@types/node": "^20.9.1",
     "react": "^18.2.0",
-    "react-dom": "^18.2.0"
+    "react-dom": "^18.2.0",
+    "react-router-dom": "^6.19.0"
   },
   "devDependencies": {
     "@types/react": "^18.2.37",

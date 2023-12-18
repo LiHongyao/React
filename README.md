@@ -2,6 +2,8 @@
 
 [React >>](https://zh-hans.reactjs.org/) 是 Facebook 在2013年推出的一个用于构建 Web 和原生交互界面的库。
 
+> 参考总览：https://zh-hans.react.dev/reference/react
+
 # 二、优势
 
 - **组件化开发**：React 基于组件化开发模式，将用户界面划分为独立的组件。这使得开发人员可以独立地编写、测试和维护每个组件，提高了代码的可复用性和可维护性。
@@ -24,7 +26,7 @@
 ## 2. npm 
 
 ```shell
-$ npm install react
+$ pnpm add react
 ```
 
 ## 3. CRA（官方脚手架）
@@ -51,12 +53,12 @@ $ npx clear-npx-cache
 ## 4. Vite
 
 ```shell
-$ npm create vite@latest <project-name> -- --template react-ts
+$ pnpm create vite <project-name> --template react-ts
 ```
 
 > Tips：参考 <https://cn.vitejs.dev/guide/#scaffolding-your-first-vite-project>
 
-## 5. Next.js（*推荐*）
+## 5. Next.js
 
 **[Next.js](https://nextjs.org/) 是一个全栈式的 React 框架**。它用途广泛，可以让你创建任意规模的 React 应用——可以是静态博客，也可以是复杂的动态应用。要创建一个新的 Next.js 项目，请在你的终端运行：
 
@@ -68,48 +70,83 @@ $ npx create-next-app
 
 # 五、初体验
 
-本教程主要以CRA的形式创建React项目：
+## 1. 安装
+
+本教程主要以 `Vite` 的创建React项目：
 
 ```shell
-$ npx create-react-app react-learns --template typescript
-$ cd react-learns && code . && npm start
+$ pnpm create vite react-tutorials --template react-ts
+$ cd react-tutorials && pnpm install && pnpm run dev 
 ```
 
-文件解读：
+## 2. 配置Vite
 
-> src/index.tsx
+开始之前，我们简单的配置一下 `vite` 路径解析：
+
+```shell
+$ pnpm add @types/node
+```
+
+> **`vite.config.ts`**
+
+```ts
+import { defineConfig } from "vite";
+import react from "@vitejs/plugin-react";
+import { resolve } from "path";
+
+export default defineConfig({
+  resolve: {
+    alias: {
+      "@": resolve(__dirname, "src"),
+    },
+  },
+  plugins: [react()],
+});
+```
+
+在 **`tsconfig.json`** 文件中的 `compilerOptions` 字段下添加如下代码。
+
+```ts
+"baseUrl": ".",
+"paths": {
+  "@/*": ["src/*"]
+}
+```
+
+## 3. 文件解读
+
+> **`src/main.tsx`**
 
 ```tsx
 // -- 引入相关依赖
-import React from 'react';
-import ReactDOM from 'react-dom/client';
-// -- 引入全局样式
-import './index.css';
+import React from "react";
+import ReactDOM from "react-dom/client";
 // -- 引入根组件
-import App from './App';
+import App from "@/App.tsx";
 
-// -- 创建根节点
-const root = ReactDOM.createRoot(
-  document.getElementById('root') as HTMLElement
-);
-// -- 渲染根节点
-root.render(
+// -- 创建并渲染根节点
+ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
     <App />
   </React.StrictMode>
 );
 ```
 
-> src/App.tsx
+> **`src/App.tsx`**
 
 ```tsx
-import React from 'react';
+import React from "react";
 
-function App() {
-  return <div className='App'>Hello，React.js!</div>;
-}
+const App: React.FC = () => {
+  return (
+    <div className="app">
+      <h3>Hello, React.js!</h3>
+    </div>
+  );
+};
 
 export default App;
+
 ```
 
 > Tips：此时页面显示 → `Hello, React.js！`
